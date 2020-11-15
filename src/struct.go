@@ -25,23 +25,17 @@ func (conf *Config) Init() {
 }
 
 type DataBase struct {
-	Number       int
-	Time         string
-	NickName     string
-	Code         string
-	Danger       string
-	Sector       string
-	DBURL        string
-	DriverNameDB string
+	Number   int
+	Time     string
+	NickName string
+	Code     string
+	Danger   string
+	Sector   string
+	DBURL    string
 }
 
 func (confDataBase *DataBase) Init() {
 	if value, exists := os.LookupEnv("DATABASE_URL"); exists {
 		confDataBase.DBURL = value
 	}
-
-	if value, exists := os.LookupEnv("DriverNameDB"); exists {
-		confDataBase.DriverNameDB = value
-	}
-
 }
