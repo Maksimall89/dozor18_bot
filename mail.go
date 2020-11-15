@@ -24,7 +24,7 @@ func main() {
 	// monitoring
 	http.HandleFunc("/", MainHandler)
 	go func() {
-		_ = http.ListenAndServe(fmt.Sprintf(":%s", configuration.Port), nil)
+		_ = http.ListenAndServe(":80", nil)
 	}()
 
 	commandArr := []string{
