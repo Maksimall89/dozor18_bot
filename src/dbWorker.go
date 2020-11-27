@@ -84,7 +84,7 @@ func (confDataBase *DataBase) DBUpdateCodesRight(updateData string) string {
 func (confDataBase *DataBase) DBSelectCodes() []DataBase {
 	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
 	if err != nil {
-		fmt.Printf(errConnectPattern, err)
+		log.Printf(errConnectPattern, err)
 	}
 	defer dbpool.Close()
 

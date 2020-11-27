@@ -3,6 +3,7 @@ package src
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"time"
@@ -44,10 +45,9 @@ func CodeGen(prefix string, postfix string, typeStyle bool, maxCount int) string
 	arrCode := make(map[int]string)
 
 	// read codes from file
-	nameFileWords := "words.txt"
-	lines, err := readLines(nameFileWords)
+	lines, err := readLines(NameFileWords)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for {

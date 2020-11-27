@@ -2,6 +2,8 @@ package src
 
 import "os"
 
+var NameFileWords = "src/words.txt"
+
 type Config struct {
 	TelegramBotToken string
 	OwnName          string
