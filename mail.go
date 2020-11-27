@@ -69,7 +69,7 @@ func main() {
 
 		if update.Message.From.UserName == configuration.OwnName {
 			switch strings.ToLower(update.Message.Command()) {
-			case "reset":
+			case "reset", "restart":
 				str = data.DBResetAll()
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, 0, bot)
 				continue
@@ -150,7 +150,7 @@ func main() {
 				}
 			}
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
-		case "generate":
+		case "generate", "gen":
 			strArr := strings.Split(update.Message.CommandArguments(), ",")
 			number, err := strconv.Atoi(strArr[0])
 			if err != nil {

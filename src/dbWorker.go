@@ -8,10 +8,12 @@ import (
 	"strings"
 )
 
+const errConnectPattern = "Unable to connect to database: %v\n"
+
 func (confDataBase DataBase) DBInsertCodesUsers() {
 	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
 	if err != nil {
-		log.Printf("Unable to connect to database: %v\n", err)
+		log.Printf(errConnectPattern, err)
 	}
 	defer dbpool.Close()
 
@@ -29,7 +31,7 @@ func (confDataBase *DataBase) DBInsertCodesRight(addData string) string {
 
 	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
 	if err != nil {
-		return fmt.Sprintf("Unable to connect to database: %v\n", err)
+		return fmt.Sprintf(errConnectPattern, err)
 	}
 	defer dbpool.Close()
 
@@ -48,7 +50,7 @@ func (confDataBase *DataBase) DBDeleteCodesRight(deleteStr string) string {
 
 	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
 	if err != nil {
-		return fmt.Sprintf("Unable to connect to database: %v\n", err)
+		return fmt.Sprintf(errConnectPattern, err)
 	}
 	defer dbpool.Close()
 
@@ -67,7 +69,7 @@ func (confDataBase *DataBase) DBUpdateCodesRight(updateData string) string {
 
 	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
 	if err != nil {
-		return fmt.Sprintf("Unable to connect to database: %v\n", err)
+		return fmt.Sprintf(errConnectPattern, err)
 	}
 	defer dbpool.Close()
 
@@ -82,7 +84,7 @@ func (confDataBase *DataBase) DBUpdateCodesRight(updateData string) string {
 func (confDataBase *DataBase) DBSelectCodes() []DataBase {
 	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
 	if err != nil {
-		fmt.Printf("Unable to connect to database: %v\n", err)
+		fmt.Printf(errConnectPattern, err)
 	}
 	defer dbpool.Close()
 
@@ -107,7 +109,7 @@ func (confDataBase *DataBase) DBSelectCodes() []DataBase {
 func (confDataBase *DataBase) DBResetAll() (str string) {
 	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
 	if err != nil {
-		return fmt.Sprintf("Unable to connect to database: %v\n", err)
+		return fmt.Sprintf(errConnectPattern, err)
 	}
 	defer dbpool.Close()
 
@@ -156,13 +158,13 @@ func (confDataBase *DataBase) DBResetAll() (str string) {
 func (confDataBase *DataBase) DBSelectAllCodesRight() []DataBase {
 	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
 	if err != nil {
-		log.Printf("Unable to connect to database: %v\n", err)
+		log.Printf(errConnectPattern, err)
 	}
 	defer dbpool.Close()
 
 	rows, err := dbpool.Query(context.Background(), "SELECT Number, Code, Danger, Sector FROM CodesRight")
 	if err != nil {
-		log.Printf("Unable to UPDATE CodesRight: %v\n", err)
+		log.Printf("Unable to SELECT CodesRight: %v\n", err)
 	}
 
 	var data []DataBase
@@ -181,13 +183,13 @@ func (confDataBase *DataBase) DBSelectAllCodesRight() []DataBase {
 func (confDataBase *DataBase) DBSelectAllCodesUser() []DataBase {
 	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
 	if err != nil {
-		log.Printf("Unable to connect to database: %v\n", err)
+		log.Printf(errConnectPattern, err)
 	}
 	defer dbpool.Close()
 
 	rows, err := dbpool.Query(context.Background(), "SELECT Number, Time, NickName, Code, Danger, Sector FROM CodesUser")
 	if err != nil {
-		log.Printf("Unable to UPDATE CodesRight: %v\n", err)
+		log.Printf("Unable to SELECT CodesUser: %v\n", err)
 	}
 
 	var data []DataBase
