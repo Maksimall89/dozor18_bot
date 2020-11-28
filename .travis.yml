@@ -8,6 +8,11 @@ jobs:
     - stage: "Compile"
       name: "Compile Packages and Dependencies"
       script: go build -v
+
+    - stage: "Tests"
+      name: "Unit Tests"
+      script: go test -v
+
     - stage: "Code Quality"
       name: "Code Quality Analysis"
       before_script:
