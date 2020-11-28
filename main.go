@@ -61,7 +61,7 @@ func main() {
 	data.Init()
 
 	var str string
-	// read from chanel
+	// read from channel
 	for update := range updates {
 		if update.Message == nil {
 			continue
