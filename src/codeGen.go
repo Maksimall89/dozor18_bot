@@ -40,9 +40,8 @@ func CodeGen(prefix string, postfix string, maxCount int, pathFileWord string) s
 
 	var str string
 	var code, buff, codePostfix, count int
-	var isSame bool
 
-	arrCode := make(map[int]string)
+	arrCode := make(map[string]string)
 
 	// read codes from file
 	lines, err := readLines(pathFileWord)
@@ -50,7 +49,7 @@ func CodeGen(prefix string, postfix string, maxCount int, pathFileWord string) s
 		log.Println(err)
 	}
 
-	for {
+	for count < maxCount {
 		// if we have the same digital codes
 		buff = code
 		code = rand.Intn(90) + 10
@@ -67,35 +66,16 @@ func CodeGen(prefix string, postfix string, maxCount int, pathFileWord string) s
 			str = fmt.Sprintf("%s%d%s%d\t1\t1\r\n", prefix, code, postfix, codePostfix)
 		}
 
-		// check old codes
-		isSame = false
-
-		for _, value := range arrCode {
-			if value == str {
-				isSame = true
-				break
-			}
-		}
-
-		// we not have double code
-		if isSame {
-			continue
-		}
-
 		// add new code
-		arrCode[count] = str
-
-		// check count codes
-		if len(arrCode) == maxCount {
-			break
-		} else {
+		if _, ok := arrCode[str]; !ok {
+			arrCode[str] = str
 			count++
 		}
 	}
 
 	str = fmt.Sprintf("&#9989;Готовые коды (%d штук).\nКОД\tКО\tСектор\n\n", maxCount)
-	for _, value := range arrCode {
-		str += value
+	for key := range arrCode {
+		str += key
 	}
 
 	return str
