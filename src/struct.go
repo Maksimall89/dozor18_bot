@@ -2,7 +2,7 @@ package src
 
 import "os"
 
-var NameFileWords = "src/words.txt"
+var NameFileWords = "words.txt"
 
 type Config struct {
 	TelegramBotToken string

@@ -158,9 +158,9 @@ func main() {
 			}
 			switch len(strArr) {
 			case 1:
-				str = src.CodeGen("", "", false, number)
+				str = src.CodeGen("", "", number, src.NameFileWords)
 			case 3:
-				str = src.CodeGen(strArr[1], strArr[2], true, number)
+				str = src.CodeGen(strArr[1], strArr[2], number, src.NameFileWords)
 			}
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 		case "text":

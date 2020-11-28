@@ -26,7 +26,7 @@ func readLines(path string) ([]string, error) {
 	return lines, scanner.Err()
 }
 
-func CodeGen(prefix string, postfix string, typeStyle bool, maxCount int) string {
+func CodeGen(prefix string, postfix string, maxCount int, pathFileWord string) string {
 
 	if maxCount == 0 {
 		return "Слишком мало кодов: 0 кодов. \n<code>/generate 10</code>\n<code>/generate 10,1D,R</code>"
@@ -45,7 +45,7 @@ func CodeGen(prefix string, postfix string, typeStyle bool, maxCount int) string
 	arrCode := make(map[int]string)
 
 	// read codes from file
-	lines, err := readLines(NameFileWords)
+	lines, err := readLines(pathFileWord)
 	if err != nil {
 		log.Println(err)
 	}
@@ -59,12 +59,12 @@ func CodeGen(prefix string, postfix string, typeStyle bool, maxCount int) string
 		}
 
 		// choose variant codes
-		if typeStyle {
-			codePostfix = rand.Intn(9) + 1
-			str = fmt.Sprintf("%s%d%s%d\t1\t1\r\n", prefix, code, postfix, codePostfix)
-		} else {
+		if postfix == "" && prefix == "" {
 			codePostfix = rand.Intn(len(lines)-5) + 1
 			str = fmt.Sprintf("%s%d\t1\t1\r\n", lines[codePostfix], code)
+		} else {
+			codePostfix = rand.Intn(9) + 1
+			str = fmt.Sprintf("%s%d%s%d\t1\t1\r\n", prefix, code, postfix, codePostfix)
 		}
 
 		// check old codes
