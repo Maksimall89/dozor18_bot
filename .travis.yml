@@ -7,7 +7,9 @@ jobs:
   include:
     - stage: "Compile"
       name: "Compile Packages and Dependencies"
-      script: go build -v
+      script: 
+        - go mod download 
+        - go build -v
 
     - stage: "Tests"
       name: "Unit Tests"
