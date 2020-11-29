@@ -28,8 +28,10 @@ jobs:
       name: "Docker Quality Analysis"
       script: docker run --rm -i hadolint/hadolint:latest < Dockerfile
 
-after_success:
-  - docker --version
-  - docker login -u $DOCKER_USER -p $DOCKER_PASS
-  - docker build -t maksimall89/dozor18_bot:1.0.0 .
-  - docker push maksimall89/dozor18_bot:1.0.0
+    - stage: "Deploy docker"
+      name: "Deploy docker to docker registry"
+      script:
+        - docker --version
+        - docker login -u $DOCKER_USER -p $DOCKER_PASS
+        - docker build -t maksimall89/dozor18_bot:latest .
+        - docker push maksimall89/dozor18_bot:latest
