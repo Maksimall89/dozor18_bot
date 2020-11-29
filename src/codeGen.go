@@ -59,7 +59,11 @@ func CodeGen(prefix string, postfix string, maxCount int, pathFileWord string) s
 
 		// choose variant codes
 		if postfix == "" && prefix == "" {
+			str = lines[codePostfix]
 			codePostfix = rand.Intn(len(lines)-5) + 1
+			if lines[codePostfix] == str {
+				continue
+			}
 			str = fmt.Sprintf("%s%d\t1\t1\r\n", lines[codePostfix], code)
 		} else {
 			codePostfix = rand.Intn(9) + 1
