@@ -8,4 +8,5 @@ RUN chmod +x main
 FROM alpine:3.12.1
 COPY --from=builder /go/dozor18_bot/ .
 EXPOSE 80
+EXPOSE 443
 CMD ["./main"]

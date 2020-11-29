@@ -3,12 +3,17 @@ language: go
 go:
   - 1.15.x
 
+sudo: required
+
+services:
+  - docker
+
 jobs:
   include:
     - stage: "Compile"
       name: "Compile Packages and Dependencies"
-      script: 
-        - go mod download 
+      script:
+        - go mod download
         - go build -v
 
     - stage: "Tests"
@@ -17,6 +22,16 @@ jobs:
 
     - stage: "Code Quality"
       name: "Code Quality Analysis"
-      before_script:
-        - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b $GOPATH/bin v1.30.0
-      script: golangci-lint run -v --skip-files funcEngine_test.go
+      script: docker run --rm -i golangci/golangci-lint:latest
+
+    - stage: "Docker Quality"
+      name: "Docker Quality Analysis"
+      script: docker run --rm -i hadolint/hadolint:latest Dockerfile
+
+before_script:
+  - docker --version
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+after_success:
+  - docker build -t maksimall89/dozor18_bot:1.0.0 .
+  - docker push maksimall89/dozor18_bot:1.0.0
