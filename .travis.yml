@@ -31,8 +31,9 @@ jobs:
     - stage: "Deploy docker"
       name: "Deploy docker to docker registry"
       if: branch = master
-      script:
+      before_script:
         - docker --version
         - docker login -u $DOCKER_USER -p $DOCKER_PASS
+      script:
         - docker build -t maksimall89/dozor18_bot:latest .
         - docker push maksimall89/dozor18_bot:latest
