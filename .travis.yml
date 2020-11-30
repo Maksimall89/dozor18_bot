@@ -30,6 +30,7 @@ jobs:
 
     - stage: "Deploy docker"
       name: "Deploy docker to docker registry"
+      if: branch = master
       script:
         - docker --version
         - docker login -u $DOCKER_USER -p $DOCKER_PASS
