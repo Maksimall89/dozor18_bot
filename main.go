@@ -27,13 +27,6 @@ func main() {
 		_ = http.ListenAndServe(":80", nil)
 	}()
 
-	commandArr := []string{
-		"/help - информация по всем доступным командам;",
-		"/codes - коды;",
-		"/generate - сгенерировать коды;",
-		"/text - текст приквела;",
-	}
-
 	// configuration bot
 	bot, err := tgbotapi.NewBotAPI(configuration.TelegramBotToken)
 	if err != nil {
@@ -108,18 +101,6 @@ func main() {
 				str = data.DBDeleteCodesRight(update.Message.CommandArguments())
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				continue
-			case "help":
-				str = "/help - информация по всем доступным командам;\n" +
-					"/codes - коды введеные юзером;\n" +
-					"/generate - сгенерировать коды;\n" +
-					"/text - текст приквела;\n" +
-					"/show - показать все коды;\n" +
-					"/reset - удалить все из БД и создать новые;\n" +
-					"/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n" +
-					"/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n" +
-					"/delete - удалить указанный код."
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
-				continue
 			}
 		}
 
@@ -166,11 +147,7 @@ func main() {
 		case "text":
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">dozor18.ru</a>.`, update.Message.MessageID, bot)
 		case "help", "start":
-			str = ""
-			for _, item := range commandArr {
-				str += item + "\n"
-			}
-			_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
+			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetListHelps(update.Message.From, configuration.OwnName), update.Message.MessageID, bot)
 		default:
 			if strings.HasPrefix(update.Message.Text, "/") {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, "I don't know what you want. But you can use /help", update.Message.MessageID, bot)
