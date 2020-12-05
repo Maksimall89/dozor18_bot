@@ -41,12 +41,13 @@ func CodeGen(prefix string, postfix string, maxCount int, pathFileWord string) s
 	var str string
 	var code, buff, codePostfix, count int
 
-	arrCode := make(map[string]string)
+	arrCode := make(map[string]int)
 
 	// read codes from file
 	lines, err := readLines(pathFileWord)
 	if err != nil {
 		log.Println(err)
+		return err.Error()
 	}
 
 	for count < maxCount {
@@ -59,9 +60,9 @@ func CodeGen(prefix string, postfix string, maxCount int, pathFileWord string) s
 
 		// choose variant codes
 		if postfix == "" && prefix == "" {
-			str = lines[codePostfix]
+			buff = codePostfix
 			codePostfix = rand.Intn(len(lines)-5) + 1
-			if lines[codePostfix] == str {
+			if codePostfix == buff {
 				continue
 			}
 			str = fmt.Sprintf("%s%d\t1\t1\r\n", lines[codePostfix], code)
@@ -72,7 +73,7 @@ func CodeGen(prefix string, postfix string, maxCount int, pathFileWord string) s
 
 		// add new code
 		if _, ok := arrCode[str]; !ok {
-			arrCode[str] = str
+			arrCode[str] = count
 			count++
 		}
 	}
