@@ -1,9 +1,9 @@
 package src
 
 import (
-	"context"
+	"database/sql"
 	"fmt"
-	"github.com/jackc/pgx/v4/pgxpool"
+	_ "github.com/lib/pq"
 	"log"
 	"strings"
 )
@@ -11,13 +11,13 @@ import (
 const errConnectPattern = "Unable to connect to database: %v\n"
 
 func (confDataBase DataBase) DBInsertCodesUsers() {
-	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
+	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
 		log.Printf(errConnectPattern, err)
 	}
-	defer dbpool.Close()
+	defer db.Close()
 
-	_, err = dbpool.Query(context.Background(), "INSERT INTO CodesUser (Time, NickName,  Code, Danger, Sector) VALUES ($1, $2, $3, $4, $5)",
+	_, err = db.Exec("INSERT INTO CodesUser (Time, NickName,  Code, Danger, Sector) VALUES ($1, $2, $3, $4, $5)",
 		confDataBase.Time, confDataBase.NickName, confDataBase.Code, confDataBase.Danger, confDataBase.Sector)
 	if err != nil {
 		log.Println(err)
@@ -29,13 +29,13 @@ func (confDataBase *DataBase) DBInsertCodesRight(addData string) string {
 		return "Слишком короткая строка: /add Code,Danger,Sector"
 	}
 
-	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
+	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
 		return fmt.Sprintf(errConnectPattern, err)
 	}
-	defer dbpool.Close()
+	defer db.Close()
 
-	_, err = dbpool.Query(context.Background(), "INSERT INTO CodesRight (Code, Danger, Sector) VALUES ($1, $2, $3)",
+	_, err = db.Exec("INSERT INTO CodesRight (Code, Danger, Sector) VALUES ($1, $2, $3)",
 		strings.TrimSpace(strArr[0]), strings.TrimSpace(strArr[1]), strings.TrimSpace(strArr[2]))
 	if err != nil {
 		return fmt.Sprintf("Unable to INSERT INTO CodesRight: %v\n", err)
@@ -48,13 +48,13 @@ func (confDataBase *DataBase) DBDeleteCodesRight(deleteStr string) string {
 		return "Слишком короткая строка: /delete CodeOld"
 	}
 
-	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
+	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
 		return fmt.Sprintf(errConnectPattern, err)
 	}
-	defer dbpool.Close()
+	defer db.Close()
 
-	_, err = dbpool.Query(context.Background(), "DELETE FROM CodesRight WHERE Code = $1", deleteStr)
+	_, err = db.Exec("DELETE FROM CodesRight WHERE Code = $1", deleteStr)
 	if err != nil {
 		return fmt.Sprintf("Unable to DELETE CodesRight: %v\n", err)
 	}
@@ -67,13 +67,13 @@ func (confDataBase *DataBase) DBUpdateCodesRight(updateData string) string {
 		return "Нет всех аргументов: /update CodeNew,Danger,Sector,CodeOld"
 	}
 
-	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
+	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
 		return fmt.Sprintf(errConnectPattern, err)
 	}
-	defer dbpool.Close()
+	defer db.Close()
 
-	_, err = dbpool.Query(context.Background(), "UPDATE CodesRight SET Code = $1, Danger = $2, Sector=$3 WHERE Code = $4",
+	_, err = db.Exec("UPDATE CodesRight SET Code = $1, Danger = $2, Sector=$3 WHERE Code = $4",
 		strings.TrimSpace(strArr[0]), strArr[1], strArr[2], strings.TrimSpace(strArr[3]))
 	if err != nil {
 		return fmt.Sprintf("Unable to UPDATE CodesRight: %v\n", err)
@@ -82,16 +82,17 @@ func (confDataBase *DataBase) DBUpdateCodesRight(updateData string) string {
 	return "&#10071;Данные <b>обновлены</b> в БД."
 }
 func (confDataBase *DataBase) DBSelectCodes() []DataBase {
-	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
+	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
 		log.Printf(errConnectPattern, err)
 	}
-	defer dbpool.Close()
+	defer db.Close()
 
-	rows, err := dbpool.Query(context.Background(), "SELECT Time, Code FROM CodesUser WHERE NickName = $1", confDataBase.NickName)
+	rows, err := db.Query("SELECT Time, Code FROM CodesUser WHERE NickName = $1", confDataBase.NickName)
 	if err != nil {
 		log.Println(err)
 	}
+	defer rows.Close()
 
 	var data []DataBase
 	for rows.Next() {
@@ -107,39 +108,39 @@ func (confDataBase *DataBase) DBSelectCodes() []DataBase {
 	return data
 }
 func (confDataBase *DataBase) DBResetAll() (str string) {
-	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
+	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
 		return fmt.Sprintf(errConnectPattern, err)
 	}
-	defer dbpool.Close()
+	defer db.Close()
 
 	// delete table
-	_, err = dbpool.Query(context.Background(), "DROP TABLE IF EXISTS CodesUser")
+	_, err = db.Exec("DROP TABLE IF EXISTS CodesUser")
 	if err != nil {
 		str += fmt.Sprintf("ERROR delete CodeUser: %s", err)
 	}
-	_, err = dbpool.Query(context.Background(), "DROP TABLE IF EXISTS CodesRight")
+	_, err = db.Exec("DROP TABLE IF EXISTS CodesRight")
 	if err != nil {
 		str += fmt.Sprintf("ERROR delete CodesRight: %s", err)
 	}
 
 	// create table
-	_, err = dbpool.Query(context.Background(), "CREATE TABLE "+
-		"CodesUser( "+
-		"Number integer PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY,"+
-		"Time    varchar(40) NOT NULL,"+
-		"NickName    varchar(100) NOT NULL,"+
-		"Code    varchar(300) NOT NULL,"+
-		"Danger   varchar(30) NOT NULL,"+
+	_, err = db.Exec("CREATE TABLE " +
+		"CodesUser( " +
+		"Number integer PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY," +
+		"Time    varchar(40) NOT NULL," +
+		"NickName    varchar(100) NOT NULL," +
+		"Code    varchar(300) NOT NULL," +
+		"Danger   varchar(30) NOT NULL," +
 		"Sector   varchar(100) NOT NULL);")
 	if err != nil {
 		str += fmt.Sprintf("ERROR create CodesUser: %s", err)
 	}
-	_, err = dbpool.Query(context.Background(), "CREATE TABLE "+
-		"CodesRight("+
-		"Number integer PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY,"+
-		"Code    varchar(300) NOT NULL,"+
-		"Danger   varchar(30) NOT NULL,"+
+	_, err = db.Exec("CREATE TABLE " +
+		"CodesRight(" +
+		"Number integer PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY," +
+		"Code    varchar(300) NOT NULL," +
+		"Danger   varchar(30) NOT NULL," +
 		"Sector   varchar(100) NOT NULL);")
 
 	if err != nil {
@@ -147,7 +148,7 @@ func (confDataBase *DataBase) DBResetAll() (str string) {
 	}
 	str += "\n\n&#9940;БД удалены и созданы занова!"
 
-	_, err = dbpool.Query(context.Background(), "CREATE INDEX ON CodesUser(NickName text_pattern_ops);")
+	_, err = db.Exec("CREATE INDEX ON CodesUser(NickName text_pattern_ops);")
 	if err != nil {
 		str += fmt.Sprintf("ERROR create index: %s", err)
 	}
@@ -156,16 +157,17 @@ func (confDataBase *DataBase) DBResetAll() (str string) {
 	return str
 }
 func (confDataBase *DataBase) DBSelectAllCodesRight() []DataBase {
-	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
+	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
 		log.Printf(errConnectPattern, err)
 	}
-	defer dbpool.Close()
+	defer db.Close()
 
-	rows, err := dbpool.Query(context.Background(), "SELECT Number, Code, Danger, Sector FROM CodesRight")
+	rows, err := db.Query("SELECT Number, Code, Danger, Sector FROM CodesRight")
 	if err != nil {
 		log.Printf("Unable to SELECT CodesRight: %v\n", err)
 	}
+	defer rows.Close()
 
 	var data []DataBase
 	for rows.Next() {
@@ -181,16 +183,17 @@ func (confDataBase *DataBase) DBSelectAllCodesRight() []DataBase {
 	return data
 }
 func (confDataBase *DataBase) DBSelectAllCodesUser() []DataBase {
-	dbpool, err := pgxpool.Connect(context.Background(), confDataBase.DBURL)
+	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
 		log.Printf(errConnectPattern, err)
 	}
-	defer dbpool.Close()
+	defer db.Close()
 
-	rows, err := dbpool.Query(context.Background(), "SELECT Number, Time, NickName, Code, Danger, Sector FROM CodesUser")
+	rows, err := db.Query("SELECT Number, Time, NickName, Code, Danger, Sector FROM CodesUser")
 	if err != nil {
 		log.Printf("Unable to SELECT CodesUser: %v\n", err)
 	}
+	defer rows.Close()
 
 	var data []DataBase
 	for rows.Next() {
