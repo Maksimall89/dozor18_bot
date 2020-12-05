@@ -35,13 +35,16 @@ func TestGetListHelps(t *testing.T) {
 		output           string
 	}
 
+	userHelps := "/help - информация по всем доступным командам;\n/codes - коды;\n/generate, /gen - сгенерировать коды;\n/text - текст приквела;\n"
+	adminHelps := userHelps + "/show - показать все коды;\n/reset - удалить все из БД и создать новые;\n/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n/delete - удалить указанный код;\n"
+
 	var tests = []testPair{
-		{&tgbotapi.User{ID: 12, FirstName: "Max", LastName: "Test", LanguageCode: "code1"}, "own1", "/help - информация по всем доступным командам;\n/codes - коды;\n/generate, /gen - сгенерировать коды;\n/text - текст приквела;\n"},
-		{&tgbotapi.User{ID: 13, FirstName: "Max", LastName: "Test", UserName: "nickName", LanguageCode: "code1"}, "own1", "/help - информация по всем доступным командам;\n/codes - коды;\n/generate, /gen - сгенерировать коды;\n/text - текст приквела;\n"},
-		{&tgbotapi.User{ID: 13, FirstName: "Max", LastName: "Test", UserName: "own1", LanguageCode: "code1"}, "own1", "/help - информация по всем доступным командам;\n/codes - коды;\n/generate, /gen - сгенерировать коды;\n/text - текст приквела;\n/show - показать все коды;\n/reset - удалить все из БД и создать новые;\n/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n/delete - удалить указанный код;\n"},
-		{&tgbotapi.User{ID: 13, FirstName: "Max", LastName: "Test", UserName: "own1", LanguageCode: "code1"}, "", "/help - информация по всем доступным командам;\n/codes - коды;\n/generate, /gen - сгенерировать коды;\n/text - текст приквела;\n"},
-		{&tgbotapi.User{}, "own1", "/help - информация по всем доступным командам;\n/codes - коды;\n/generate, /gen - сгенерировать коды;\n/text - текст приквела;\n"},
-		{&tgbotapi.User{}, "", "/help - информация по всем доступным командам;\n/codes - коды;\n/generate, /gen - сгенерировать коды;\n/text - текст приквела;\n/show - показать все коды;\n/reset - удалить все из БД и создать новые;\n/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n/delete - удалить указанный код;\n"},
+		{&tgbotapi.User{ID: 12, FirstName: "Max", LastName: "Test", LanguageCode: "code1"}, "own1", userHelps},
+		{&tgbotapi.User{ID: 13, FirstName: "Max", LastName: "Test", UserName: "nickName", LanguageCode: "code1"}, "own1", userHelps},
+		{&tgbotapi.User{ID: 13, FirstName: "Max", LastName: "Test", UserName: "own1", LanguageCode: "code1"}, "own1", adminHelps},
+		{&tgbotapi.User{ID: 13, FirstName: "Max", LastName: "Test", UserName: "own1", LanguageCode: "code1"}, "", userHelps},
+		{&tgbotapi.User{}, "own1", userHelps},
+		{&tgbotapi.User{}, "", adminHelps},
 	}
 
 	for _, pair := range tests {
