@@ -8,6 +8,7 @@ type Config struct {
 	TelegramBotToken string
 	OwnName          string
 	ListenPath       string
+	Port             string
 }
 
 func (conf *Config) Init() {
@@ -18,6 +19,9 @@ func (conf *Config) Init() {
 		conf.OwnName = value
 	}
 	if value, exists := os.LookupEnv("ListenPath"); exists {
+		conf.ListenPath = value
+	}
+	if value, exists := os.LookupEnv("PORT"); exists {
 		conf.ListenPath = value
 	}
 }
