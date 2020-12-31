@@ -45,5 +45,4 @@ func (confDataBase *DataBase) Init() {
 	if value, exists := os.LookupEnv("DriverNameDB"); exists {
 		confDataBase.DriverNameDB = value
 	}
-
 }
