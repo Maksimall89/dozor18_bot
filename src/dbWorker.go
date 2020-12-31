@@ -8,11 +8,12 @@ import (
 	"strings"
 )
 
-func (confDataBase DataBase) DBInsertCodesUsers() {
+const errConnectPattern = "Unable to connect to database: %v\n"
 
+func (confDataBase DataBase) DBInsertCodesUsers() {
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
-		log.Println(err)
+		log.Printf(errConnectPattern, err)
 	}
 	defer db.Close()
 
@@ -30,38 +31,37 @@ func (confDataBase *DataBase) DBInsertCodesRight(addData string) string {
 
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
-		return fmt.Sprintf("ERROR: %s", err)
+		return fmt.Sprintf(errConnectPattern, err)
 	}
 	defer db.Close()
 
 	_, err = db.Exec("INSERT INTO CodesRight (Code, Danger, Sector) VALUES ($1, $2, $3)",
 		strings.TrimSpace(strArr[0]), strings.TrimSpace(strArr[1]), strings.TrimSpace(strArr[2]))
 	if err != nil {
-		return fmt.Sprintf("ERROR: %s", err)
+		return fmt.Sprintf("Unable to INSERT INTO CodesRight: %v\n", err)
 	}
 
 	return "&#10004;Данные <b>добавлены</b> в БД."
 }
 func (confDataBase *DataBase) DBDeleteCodesRight(deleteStr string) string {
-
 	if len(deleteStr) < 2 {
 		return "Слишком короткая строка: /delete CodeOld"
 	}
 
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
-		return fmt.Sprintf("ERROR: %s", err)
+		return fmt.Sprintf(errConnectPattern, err)
 	}
 	defer db.Close()
 
 	_, err = db.Exec("DELETE FROM CodesRight WHERE Code = $1", deleteStr)
 	if err != nil {
-		return fmt.Sprintf("ERROR: %s", err)
+		return fmt.Sprintf("Unable to DELETE CodesRight: %v\n", err)
 	}
+
 	return "&#8252;Данные <b>удалены</b> в БД=" + deleteStr
 }
 func (confDataBase *DataBase) DBUpdateCodesRight(updateData string) string {
-
 	strArr := strings.Split(updateData, ",")
 	if len(strArr) < 4 {
 		return "Нет всех аргументов: /update CodeNew,Danger,Sector,CodeOld"
@@ -69,14 +69,14 @@ func (confDataBase *DataBase) DBUpdateCodesRight(updateData string) string {
 
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
-		return fmt.Sprintf("ERROR: %s", err)
+		return fmt.Sprintf(errConnectPattern, err)
 	}
 	defer db.Close()
 
 	_, err = db.Exec("UPDATE CodesRight SET Code = $1, Danger = $2, Sector=$3 WHERE Code = $4",
 		strings.TrimSpace(strArr[0]), strArr[1], strArr[2], strings.TrimSpace(strArr[3]))
 	if err != nil {
-		return fmt.Sprintf("ERROR: %s", err)
+		return fmt.Sprintf("Unable to UPDATE CodesRight: %v\n", err)
 	}
 
 	return "&#10071;Данные <b>обновлены</b> в БД."
@@ -84,7 +84,7 @@ func (confDataBase *DataBase) DBUpdateCodesRight(updateData string) string {
 func (confDataBase *DataBase) DBSelectCodes() []DataBase {
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
-		log.Println(err)
+		log.Printf(errConnectPattern, err)
 	}
 	defer db.Close()
 
@@ -107,11 +107,10 @@ func (confDataBase *DataBase) DBSelectCodes() []DataBase {
 
 	return data
 }
-func (confDataBase *DataBase) DBResetAll() string {
+func (confDataBase *DataBase) DBResetAll() (str string) {
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
-	str := ""
 	if err != nil {
-		str = fmt.Sprintf("ERROR: %s", err)
+		return fmt.Sprintf(errConnectPattern, err)
 	}
 	defer db.Close()
 
@@ -160,13 +159,13 @@ func (confDataBase *DataBase) DBResetAll() string {
 func (confDataBase *DataBase) DBSelectAllCodesRight() []DataBase {
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
-		log.Println(err)
+		log.Printf(errConnectPattern, err)
 	}
 	defer db.Close()
 
 	rows, err := db.Query("SELECT Number, Code, Danger, Sector FROM CodesRight")
 	if err != nil {
-		log.Println(err)
+		log.Printf("Unable to SELECT CodesRight: %v\n", err)
 	}
 	defer rows.Close()
 
@@ -186,13 +185,13 @@ func (confDataBase *DataBase) DBSelectAllCodesRight() []DataBase {
 func (confDataBase *DataBase) DBSelectAllCodesUser() []DataBase {
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
 	if err != nil {
-		log.Println(err)
+		log.Printf(errConnectPattern, err)
 	}
 	defer db.Close()
 
 	rows, err := db.Query("SELECT Number, Time, NickName, Code, Danger, Sector FROM CodesUser")
 	if err != nil {
-		log.Println(err)
+		log.Printf("Unable to SELECT CodesUser: %v\n", err)
 	}
 	defer rows.Close()
 
