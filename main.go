@@ -53,9 +53,6 @@ func main() {
 	data := src.DataBase{}
 	data.Init()
 
-	teams := src.Teams{}
-	teams.InitDB(data)
-
 	var str string
 	// read from channel
 	for update := range updates {
@@ -110,6 +107,8 @@ func main() {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				continue
 			case "create":
+				teams := src.Teams{}
+				teams.InitDB(data)
 				teams.Time = fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
 				teams.Owner = src.GetNickName(update.Message.From)
 				teams.Team = strings.ToLower(strings.TrimSpace(update.Message.Text))

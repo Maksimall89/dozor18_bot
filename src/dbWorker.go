@@ -267,5 +267,5 @@ func (confDataBase *Teams) DBCreateTeam() string {
 		log.Println(err)
 		return err.Error()
 	}
-	return fmt.Sprintf("Команда %s создана, для вступления в неё введите: <code>/join %s %s </code>%s", confDataBase.Team, confDataBase.Team, confDataBase.Hash)
+	return fmt.Sprintf("Команда %s создана, для вступления в неё введите: <code>/join %s %s </code>", confDataBase.Team, confDataBase.Team, confDataBase.Hash)
 }
