@@ -1,11 +1,19 @@
 package src
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"gopkg.in/telegram-bot-api.v4"
 	"log"
 	"strings"
 )
+
+func GetMD5Hash(text string) string {
+	hasher := md5.New()
+	hasher.Write([]byte(text))
+	return hex.EncodeToString(hasher.Sum(nil))
+}
 
 func GetNickName(from *tgbotapi.User) string {
 	if from.UserName != "" {
@@ -31,6 +39,11 @@ func GetListHelps(from *tgbotapi.User, adminNickname string) (commandList string
 		{true, "/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n"},
 		{true, "/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n"},
 		{true, "/delete - удалить указанный код;\n"},
+		{true, "/create - создать команду;\n"},
+		{true, "/join - вступить в команду;\n"},
+		{true, "/list - список участников;\n"},
+		{true, "/leave - выйти из команды;\n"},
+		{true, "/resetteams - удалить все команды;\n"},
 	}
 
 	for _, command := range commands {

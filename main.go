@@ -53,6 +53,9 @@ func main() {
 	data := src.DataBase{}
 	data.Init()
 
+	teams := src.Teams{}
+	teams.InitDB(data)
+
 	var str string
 	// read from channel
 	for update := range updates {
@@ -63,7 +66,7 @@ func main() {
 		if update.Message.From.UserName == configuration.OwnName {
 			switch strings.ToLower(update.Message.Command()) {
 			case "reset", "restart":
-				str = data.DBResetAll()
+				str = data.DBResetAllCodes()
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, 0, bot)
 				continue
 			case "show":
@@ -99,6 +102,19 @@ func main() {
 			case "delete":
 				// /delete code1
 				str = data.DBDeleteCodesRight(update.Message.CommandArguments())
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
+				continue
+				// work with teams
+			case "resetteams":
+				str = data.DBResetUser()
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
+				continue
+			case "create":
+				teams.Time = fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+				teams.Owner = src.GetNickName(update.Message.From)
+				teams.Team = strings.ToLower(strings.TrimSpace(update.Message.Text))
+				teams.Hash = src.GetMD5Hash(teams.Team)
+				str = teams.DBCreateTeam()
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				continue
 			}
