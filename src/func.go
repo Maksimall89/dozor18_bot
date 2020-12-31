@@ -15,6 +15,33 @@ func GetNickName(from *tgbotapi.User) string {
 	return fmt.Sprintf("%d + %s %s", from.ID, from.FirstName, from.LastName)
 }
 
+func GetListHelps(from *tgbotapi.User, adminNickname string) (commandList string) {
+	type commandStruct struct {
+		admin   bool
+		command string
+	}
+
+	var commands = []commandStruct{
+		{false, "/help - информация по всем доступным командам;\n"},
+		{false, "/codes - коды;\n"},
+		{false, "/generate, /gen - сгенерировать коды;\n"},
+		{false, "/text - текст приквела;\n"},
+		{true, "/show - показать все коды;\n"},
+		{true, "/reset - удалить все из БД и создать новые;\n"},
+		{true, "/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n"},
+		{true, "/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n"},
+		{true, "/delete - удалить указанный код;\n"},
+	}
+
+	for _, command := range commands {
+		if command.admin && adminNickname != from.UserName {
+			continue
+		}
+		commandList += command.command
+	}
+	return commandList
+}
+
 func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot *tgbotapi.BotAPI) error {
 	var pointerStr int
 	var msg tgbotapi.MessageConfig

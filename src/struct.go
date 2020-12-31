@@ -2,6 +2,8 @@ package src
 
 import "os"
 
+var NameFileWords = "./words.txt"
+
 type Config struct {
 	TelegramBotToken string
 	OwnName          string
@@ -20,7 +22,7 @@ func (conf *Config) Init() {
 		conf.ListenPath = value
 	}
 	if value, exists := os.LookupEnv("PORT"); exists {
-		conf.Port = value
+		conf.ListenPath = value
 	}
 }
 
@@ -39,9 +41,7 @@ func (confDataBase *DataBase) Init() {
 	if value, exists := os.LookupEnv("DATABASE_URL"); exists {
 		confDataBase.DBURL = value
 	}
-
 	if value, exists := os.LookupEnv("DriverNameDB"); exists {
 		confDataBase.DriverNameDB = value
 	}
-
 }

@@ -150,7 +150,7 @@ func main() {
 				}
 			}
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
-		case "generate":
+		case "generate", "gen":
 			strArr := strings.Split(update.Message.CommandArguments(), ",")
 			number, err := strconv.Atoi(strArr[0])
 			if err != nil {
@@ -158,11 +158,10 @@ func main() {
 			}
 			switch len(strArr) {
 			case 1:
-				str = src.CodeGen("", "", false, number)
+				str = src.CodeGen("", "", number, src.NameFileWords)
 			case 3:
-				str = src.CodeGen(strArr[1], strArr[2], true, number)
+				str = src.CodeGen(strArr[1], strArr[2], number, src.NameFileWords)
 			}
-			_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 		case "text":
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">dozor18.ru</a>.`, update.Message.MessageID, bot)
 		case "help", "start":
