@@ -22,7 +22,7 @@ func (conf *Config) Init() {
 		conf.ListenPath = value
 	}
 	if value, exists := os.LookupEnv("PORT"); exists {
-		conf.ListenPath = value
+		conf.Port = value
 	}
 }
 
