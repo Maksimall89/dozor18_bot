@@ -3,13 +3,39 @@ language: go
 go:
   - 1.15.x
 
+sudo: required
+
+services:
+  - docker
+
 jobs:
   include:
     - stage: "Compile"
       name: "Compile Packages and Dependencies"
-      script: go build -v
+      script:
+        - go mod download
+        - go build -v
+
+    - stage: "Tests"
+      name: "Unit Tests"
+      script: go test -v
+
+    - stage: "Install"
+      name: "Install package"
+      script: go install -v
+
     - stage: "Code Quality"
       name: "Code Quality Analysis"
-      before_script:
-        - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b $GOPATH/bin v1.30.0
-      script: golangci-lint run -v --skip-files funcEngine_test.go
+      script: docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:latest golangci-lint run -v
+
+    - stage: "Docker Quality"
+      name: "Docker Quality Analysis"
+      script: docker run --rm -i hadolint/hadolint:latest < Dockerfile
+
+
+stages:
+  - "Compile"
+  - "Tests"
+  - "Install"
+  - "Code Quality"
+  - "Docker Quality"

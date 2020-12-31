@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/Maksimall89/dozor18_bot.svg?branch=main)](https://travis-ci.com/Maksimall89/dozor18_bot) 
+[![Build Status](https://travis-ci.com/Maksimall89/dozor18_bot.svg?branch=master)](https://travis-ci.com/Maksimall89/dozor18_bot) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Maksimall89_dozor18_bot&metric=alert_status)](https://sonarcloud.io/dashboard?id=Maksimall89_dozor18_bot) 
 # @dozor18_bot
 Telegram бот для проверки кодов приквелов и генерации кодов [@dozor18_bot](https://t.me/dozor18_bot).
 Весь список команд бота доступен по команде `/start` или `/help`.

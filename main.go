@@ -1,8 +1,8 @@
 package main
 
 import (
-	"dozor18_bot/src"
 	"fmt"
+	"github.com/Maksimall89/dozor18_bot/src"
 	"gopkg.in/telegram-bot-api.v4"
 	"log"
 	"net/http"
@@ -26,13 +26,6 @@ func main() {
 	go func() {
 		_ = http.ListenAndServe(fmt.Sprintf(":%s", configuration.Port), nil)
 	}()
-
-	commandArr := []string{
-		"/help - информация по всем доступным командам;",
-		"/codes - коды;",
-		"/generate - сгенерировать коды;",
-		"/text - текст приквела;",
-	}
 
 	// configuration bot
 	bot, err := tgbotapi.NewBotAPI(configuration.TelegramBotToken)
@@ -61,7 +54,7 @@ func main() {
 	data.Init()
 
 	var str string
-	// read from chanel
+	// read from channel
 	for update := range updates {
 		if update.Message == nil {
 			continue
@@ -69,7 +62,7 @@ func main() {
 
 		if update.Message.From.UserName == configuration.OwnName {
 			switch strings.ToLower(update.Message.Command()) {
-			case "reset":
+			case "reset", "restart":
 				str = data.DBResetAll()
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, 0, bot)
 				continue
@@ -108,18 +101,6 @@ func main() {
 				str = data.DBDeleteCodesRight(update.Message.CommandArguments())
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				continue
-			case "help":
-				str = "/help - информация по всем доступным командам;\n" +
-					"/codes - коды введеные юзером;\n" +
-					"/generate - сгенерировать коды;\n" +
-					"/text - текст приквела;\n" +
-					"/show - показать все коды;\n" +
-					"/reset - удалить все из БД и создать новые;\n" +
-					"/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n" +
-					"/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n" +
-					"/delete - удалить указанный код."
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
-				continue
 			}
 		}
 
@@ -150,7 +131,7 @@ func main() {
 				}
 			}
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
-		case "generate":
+		case "generate", "gen":
 			strArr := strings.Split(update.Message.CommandArguments(), ",")
 			number, err := strconv.Atoi(strArr[0])
 			if err != nil {
@@ -158,19 +139,15 @@ func main() {
 			}
 			switch len(strArr) {
 			case 1:
-				str = src.CodeGen("", "", false, number)
+				str = src.CodeGen("", "", number, src.NameFileWords)
 			case 3:
-				str = src.CodeGen(strArr[1], strArr[2], true, number)
+				str = src.CodeGen(strArr[1], strArr[2], number, src.NameFileWords)
 			}
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 		case "text":
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">dozor18.ru</a>.`, update.Message.MessageID, bot)
 		case "help", "start":
-			str = ""
-			for _, item := range commandArr {
-				str += item + "\n"
-			}
-			_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
+			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetListHelps(update.Message.From, configuration.OwnName), update.Message.MessageID, bot)
 		default:
 			if strings.HasPrefix(update.Message.Text, "/") {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, "I don't know what you want. But you can use /help", update.Message.MessageID, bot)
