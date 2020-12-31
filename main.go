@@ -1,8 +1,8 @@
 package main
 
 import (
-	"dozor18_bot/src"
 	"fmt"
+	"github.com/Maksimall89/dozor18_bot/src"
 	"gopkg.in/telegram-bot-api.v4"
 	"log"
 	"net/http"
