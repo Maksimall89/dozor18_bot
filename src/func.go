@@ -12,7 +12,8 @@ import (
 func GetMD5Hash(text string) string {
 	hasher := md5.New()
 	_, _ = hasher.Write([]byte(text))
-	return hex.EncodeToString(hasher.Sum(nil))
+	text = hex.EncodeToString(hasher.Sum(nil))
+	return text[:18]
 }
 
 func GetNickName(from *tgbotapi.User) string {

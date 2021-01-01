@@ -107,13 +107,16 @@ func main() {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				continue
 			case "create":
-				teams := src.Teams{}
-				teams.InitDB(data)
-				teams.Time = fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
-				teams.Owner = src.GetNickName(update.Message.From)
-				teams.Team = strings.ToLower(strings.TrimSpace(update.Message.Text))
-				teams.Hash = src.GetMD5Hash(teams.Team)
-				str = teams.DBCreateTeam()
+				str = "Слишком короткое название команды, надо минимум 3 символа."
+				if len(update.Message.CommandArguments()) > 2 {
+					teams := src.Teams{}
+					teams.InitDB(data)
+					teams.Time = fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+					teams.Owner = src.GetNickName(update.Message.From)
+					teams.Team = strings.ToLower(strings.TrimSpace(update.Message.CommandArguments()))
+					teams.Hash = src.GetMD5Hash(teams.Team)
+					str = teams.DBCreateTeam()
+				}
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				continue
 			}
