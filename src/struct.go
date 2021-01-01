@@ -62,7 +62,7 @@ type Teams struct {
 	Time         string
 	Team         string
 	Hash         string
-	Owner        string
+	NickName     string
 	DBURL        string
 	DriverNameDB string
 }

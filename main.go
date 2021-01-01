@@ -112,7 +112,7 @@ func main() {
 					teams := src.Teams{}
 					teams.InitDB(data)
 					teams.Time = fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
-					teams.Owner = src.GetNickName(update.Message.From)
+					teams.NickName = src.GetNickName(update.Message.From)
 					teams.Team = strings.ToLower(strings.TrimSpace(update.Message.CommandArguments()))
 					teams.Hash = src.GetMD5Hash(teams.Team)
 					str = teams.DBCreateTeam()
@@ -125,7 +125,7 @@ func main() {
 				team.InitDB(data)
 				teams := team.DBSelectTeam()
 				for _, value := range teams {
-					str += fmt.Sprintf("%d. <b>%s</b>, %s, %s, %s\n", value.ID, value.Team, value.Owner, value.Hash, value.Time)
+					str += fmt.Sprintf("%d. <b>%s</b>, %s, <code>%s</code>, %s\n", value.ID, value.Team, value.NickName, value.Hash, value.Time)
 				}
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				continue
@@ -139,6 +139,23 @@ func main() {
 				}
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				continue
+			case "join":
+				user := src.Users{}
+				user.InitDB(data)
+				str = user.DBInsertUser()
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
+				continue
+			case "leave":
+				str = "\n"
+				user := src.Users{}
+				user.InitDB(data)
+				users := user.DBSelectUsers()
+				for key, value := range users {
+					str += fmt.Sprintf("%d. <b>%s</b> %s\n", key, value.NickName, value.Team)
+				}
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
+				continue
+
 			}
 		}
 
