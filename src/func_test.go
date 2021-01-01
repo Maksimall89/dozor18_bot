@@ -26,6 +26,16 @@ func TestGetNickName(t *testing.T) {
 		}
 	}
 }
+func TestGetMD5Hash(t *testing.T) {
+	t.Parallel()
+
+	input := "test"
+	output := "098f6bcd4621d373ca"
+	result := GetMD5Hash(input)
+	if result != output {
+		t.Errorf("For %s\nexpected %s\ngot %s", input, output, result)
+	}
+}
 func TestGetListHelps(t *testing.T) {
 	t.Parallel()
 
