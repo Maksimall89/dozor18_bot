@@ -270,7 +270,7 @@ func (confDataBase *Teams) DBCreateTeam() string {
 		return err.Error()
 	}
 	// add owner in team
-	_, err = db.Exec("INSERT INTO Users (NickName, Time, Team) VALUES ($1, $2, $3, $4)",
+	_, err = db.Exec("INSERT INTO Users (NickName, Time, Team) VALUES ($1, $2, $3)",
 		confDataBase.NickName, confDataBase.Time, confDataBase.Team)
 	if err != nil {
 		log.Println(err)
