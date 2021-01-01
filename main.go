@@ -119,6 +119,16 @@ func main() {
 				}
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				continue
+			case "listall":
+				str = "Список всех команд:\n"
+				team := src.Teams{}
+				team.InitDB(data)
+				teams := team.DBSelectTeam()
+				for _, value := range teams {
+					str += fmt.Sprintf("%d | %s | %s | %s | %s", value.ID, value.Team, value.Owner, value.Hash, value.Time)
+				}
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
+				continue
 			}
 		}
 

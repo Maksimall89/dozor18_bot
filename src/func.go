@@ -43,6 +43,7 @@ func GetListHelps(from *tgbotapi.User, adminNickname string) (commandList string
 		{true, "/create - создать команду;\n"},
 		{true, "/join - вступить в команду;\n"},
 		{true, "/list - список участников;\n"},
+		{true, "/listall - список всех команд;\n"},
 		{true, "/leave - выйти из команды;\n"},
 		{true, "/resetteams - удалить все команды;\n"},
 	}

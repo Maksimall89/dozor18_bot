@@ -270,3 +270,55 @@ func (confDataBase *Teams) DBCreateTeam() string {
 	}
 	return fmt.Sprintf("Команда %s создана, для вступления в неё введите: <code>/join %s %s </code>", confDataBase.Team, confDataBase.Team, confDataBase.Hash)
 }
+func (confDataBase *Users) DBSelectUsers() []Users {
+	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+	if err != nil {
+		log.Printf(errConnectPattern, err)
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT NickName, Team FROM Users")
+	if err != nil {
+		log.Printf("Unable to SELECT Users: %v\n", err)
+	}
+	defer rows.Close()
+
+	var data []Users
+	for rows.Next() {
+		d := Users{}
+		err := rows.Scan(&d.NickName, &d.Team)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		data = append(data, d)
+	}
+
+	return data
+}
+func (confDataBase *Teams) DBSelectTeam() []Teams {
+	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+	if err != nil {
+		log.Printf(errConnectPattern, err)
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT ID, Time, Team, Hash, Owner FROM Teams")
+	if err != nil {
+		log.Printf("Unable to SELECT Teams: %v\n", err)
+	}
+	defer rows.Close()
+
+	var data []Teams
+	for rows.Next() {
+		d := Teams{}
+		err := rows.Scan(&d.ID, &d.Time, &d.Team, &d.Hash, &d.Owner)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		data = append(data, d)
+	}
+
+	return data
+}
