@@ -140,10 +140,7 @@ func main() {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				continue
 			case "join":
-				user := src.Users{}
-				user.InitDB(data)
-				str = user.DBInsertUser()
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.AddUser(update.Message, data), update.Message.MessageID, bot)
 				continue
 			case "leave":
 				str = "\n"

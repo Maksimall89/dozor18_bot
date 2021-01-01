@@ -338,7 +338,7 @@ func (confDataBase *Users) DBInsertUser() string {
 	}
 	defer db.Close()
 
-	_, err = db.Exec("INSERT INTO Users (NickName, Time, Team) VALUES ($1, $2, $3, $4)",
+	_, err = db.Exec("INSERT INTO Users (NickName, Time, Team) VALUES ($1, $2, $3)",
 		confDataBase.NickName, confDataBase.Time, confDataBase.Team)
 	if err != nil {
 		log.Println(err)

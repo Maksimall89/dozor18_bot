@@ -7,7 +7,32 @@ import (
 	"gopkg.in/telegram-bot-api.v4"
 	"log"
 	"strings"
+	"time"
 )
+
+func AddUser(addUser *tgbotapi.Message, data DataBase) string {
+	strArr := strings.Split(addUser.CommandArguments(), ",")
+	if len(strArr) < 2 {
+		return "Слишком короткая строка: /join team, secret key"
+	}
+	for number, value := range strArr {
+		strArr[number] = strings.ToLower(strings.TrimSpace(value))
+	}
+
+	user := Users{}
+	user.InitDB(data)
+	team := Teams{}
+	team.InitDB(data)
+
+	if strArr[0] != team.Team || strArr[1] != team.Hash {
+		return "Неверный ключ или имя команды"
+	}
+	user.NickName = GetNickName(addUser.From)
+	user.Time = fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+	user.Team = strArr[1]
+
+	return user.DBInsertUser()
+}
 
 func GetMD5Hash(text string) string {
 	hasher := md5.New()
@@ -15,7 +40,6 @@ func GetMD5Hash(text string) string {
 	text = hex.EncodeToString(hasher.Sum(nil))
 	return text[:18]
 }
-
 func GetNickName(from *tgbotapi.User) string {
 	if from.UserName != "" {
 		return fmt.Sprintf("%d + %s", from.ID, from.UserName)
@@ -23,7 +47,6 @@ func GetNickName(from *tgbotapi.User) string {
 
 	return fmt.Sprintf("%d + %s %s", from.ID, from.FirstName, from.LastName)
 }
-
 func GetListHelps(from *tgbotapi.User, adminNickname string) (commandList string) {
 	type commandStruct struct {
 		admin   bool
@@ -56,7 +79,6 @@ func GetListHelps(from *tgbotapi.User, adminNickname string) (commandList string
 	}
 	return commandList
 }
-
 func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot *tgbotapi.BotAPI) error {
 	var pointerStr int
 	var msg tgbotapi.MessageConfig
