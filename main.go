@@ -125,7 +125,17 @@ func main() {
 				team.InitDB(data)
 				teams := team.DBSelectTeam()
 				for _, value := range teams {
-					str += fmt.Sprintf("%d | %s | %s | %s | %s", value.ID, value.Team, value.Owner, value.Hash, value.Time)
+					str += fmt.Sprintf("%d. <b>%s</b>, %s, %s, %s\n", value.ID, value.Team, value.Owner, value.Hash, value.Time)
+				}
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
+				continue
+			case "list":
+				str = "Список всех участников команды:\n"
+				user := src.Users{}
+				user.InitDB(data)
+				users := user.DBSelectUsers()
+				for key, value := range users {
+					str += fmt.Sprintf("%d. <b>%s</b> %s\n", key, value.NickName, value.Team)
 				}
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				continue

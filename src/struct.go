@@ -46,7 +46,13 @@ func (confDataBase *DataBase) Init() {
 	}
 }
 
+// add interface
 func (newConf *Teams) InitDB(oldConf DataBase) {
+	newConf.DriverNameDB = oldConf.DriverNameDB
+	newConf.DBURL = oldConf.DBURL
+}
+
+func (newConf *Users) InitDB(oldConf DataBase) {
 	newConf.DriverNameDB = oldConf.DriverNameDB
 	newConf.DBURL = oldConf.DBURL
 }
