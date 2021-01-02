@@ -107,7 +107,7 @@ func (confDataBase *DBconfig) DBResetAllCodes() string {
 		"Code		varchar(300) NOT NULL," +
 		"Danger		varchar(30) NOT NULL," +
 		"Sector		varchar(100) NOT NULL," +
-		"Team		varchar(100);")
+		"Team		varchar(100));")
 	if err != nil {
 		resultStr += fmt.Sprintf("ERROR create CodesUser: %s", err)
 	}
