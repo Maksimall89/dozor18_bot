@@ -333,3 +333,28 @@ func (confDataBase *DBconfig) DBInsertUser(users *Users) string {
 
 	return fmt.Sprintf("&#9989;Игрок %s <b>добавлен</b> в команду %s.", users.NickName, users.Team)
 }
+func (confDataBase *DBconfig) DBDeleteUser(deleteUser string) string {
+	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+	if err != nil {
+		return fmt.Sprintf(errConnectPattern, err)
+	}
+	defer db.Close()
+
+	row := db.QueryRow("SELECT Team FROM Users WHERE NickName = $1", deleteUser)
+	if err != nil {
+		log.Printf("Unable to SELECT Users: %v\n", err)
+	}
+	user := Users{}
+	err = row.Scan(&user.Team)
+	if err != nil {
+		return fmt.Sprintf("&#8252;Вы не состоите в команде <b>%s</b>.", user.Team)
+	}
+
+	_, err = db.Exec("DELETE FROM Users WHERE NickName = $1", deleteUser)
+	if err != nil {
+		log.Printf("Unable to DELETE %s from %s: %v\n", deleteUser, user.Team, err)
+		return fmt.Sprintf("Невозможно удалить <b>%s</b> из команды <b>%s</b>\n", deleteUser, user.Team)
+	}
+
+	return fmt.Sprintf("&#8252;Вы покинули команду <b>%s</b>.", user.Team)
+}
