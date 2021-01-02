@@ -90,7 +90,7 @@ func CreateTeam(message *tgbotapi.Message, dbConfig DBconfig) string {
 func JoinTeam(addUser *tgbotapi.Message, dbConfig DBconfig) string {
 	strArr := strings.Split(addUser.CommandArguments(), ",")
 	if len(strArr) < 2 {
-		return "&#10071;Нет всех аргументов:  /join team, secret key"
+		return "&#10071;Нет всех аргументов: /join team, secret key"
 	}
 	for number, value := range strArr {
 		strArr[number] = strings.ToLower(strings.TrimSpace(value))
@@ -102,7 +102,7 @@ func JoinTeam(addUser *tgbotapi.Message, dbConfig DBconfig) string {
 	}
 	user.NickName = GetNickName(addUser.From)
 	user.Time = GetTime()
-	user.Team = strArr[1]
+	user.Team = strArr[0]
 
 	return dbConfig.DBInsertUser(&user)
 }
