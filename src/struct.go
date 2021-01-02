@@ -26,18 +26,12 @@ func (conf *Config) Init() {
 	}
 }
 
-type DataBase struct {
-	Number       int
-	Time         string
-	NickName     string
-	Code         string
-	Danger       string
-	Sector       string
+type DBconfig struct {
 	DBURL        string
 	DriverNameDB string
 }
 
-func (confDataBase *DataBase) Init() {
+func (confDataBase *DBconfig) Init() {
 	if value, exists := os.LookupEnv("DATABASE_URL"); exists {
 		confDataBase.DBURL = value
 	}
@@ -46,33 +40,28 @@ func (confDataBase *DataBase) Init() {
 	}
 }
 
-// add interface
-func (newConf *Teams) InitDB(oldConf DataBase) {
-	newConf.DriverNameDB = oldConf.DriverNameDB
-	newConf.DBURL = oldConf.DBURL
-}
-
-func (newConf *Users) InitDB(oldConf DataBase) {
-	newConf.DriverNameDB = oldConf.DriverNameDB
-	newConf.DBURL = oldConf.DBURL
+type Codes struct {
+	ID       int
+	Time     string
+	NickName string
+	Code     string
+	Danger   string
+	Sector   string
 }
 
 type Teams struct {
-	ID           int
-	Time         string
-	Team         string
-	Hash         string
-	NickName     string
-	DBURL        string
-	DriverNameDB string
+	ID       int
+	Time     string
+	NickName string
+	Team     string
+	Hash     string
 }
+
 type Users struct {
-	ID           int
-	NickName     string
-	Time         string
-	Team         string
-	Login        string
-	Password     string
-	DBURL        string
-	DriverNameDB string
+	ID       int
+	Time     string
+	NickName string
+	Team     string
+	Login    string
+	Password string
 }

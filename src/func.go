@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func AddUser(addUser *tgbotapi.Message, data DataBase) string {
+func AddUser(addUser *tgbotapi.Message, dbConfig DBconfig) string {
 	strArr := strings.Split(addUser.CommandArguments(), ",")
 	if len(strArr) < 2 {
 		return "Слишком короткая строка: /join team, secret key"
@@ -18,20 +18,93 @@ func AddUser(addUser *tgbotapi.Message, data DataBase) string {
 	for number, value := range strArr {
 		strArr[number] = strings.ToLower(strings.TrimSpace(value))
 	}
-
 	user := Users{}
-	user.InitDB(data)
-	team := Teams{}
-	team.InitDB(data)
-
-	if strArr[0] != team.Team || strArr[1] != team.Hash {
+	team := dbConfig.DBSelectTeam(strArr[0])
+	if len(team) != 1 || strArr[1] != team[0].Hash {
 		return "Неверный ключ или имя команды"
 	}
 	user.NickName = GetNickName(addUser.From)
 	user.Time = fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
 	user.Team = strArr[1]
 
-	return user.DBInsertUser()
+	return dbConfig.DBInsertUser(&user)
+}
+func ShowCodesAll(dbConfig DBconfig) string {
+	dataAllRight := dbConfig.DBSelectCodesRight()
+	// ID, Time, NickName, Code, Danger, Sector
+	str := fmt.Sprintf("Всего кодов в движке: %d\n&#9989;Коды верные:\n", len(dataAllRight))
+	for _, value := range dataAllRight {
+		str += fmt.Sprintf("%d. <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s;\n", value.ID, value.Code, value.Danger, value.Sector)
+	}
+
+	dataAllUsers := dbConfig.DBSelectCodesUser("")
+	// ID, Time, NickName, Code, Danger, Sector
+	str += fmt.Sprintf("\nВсего кодов введено: %d\n&#9745;Коды Юзеров:\n", len(dataAllUsers))
+	for _, value := range dataAllUsers {
+		str += fmt.Sprintf("%d. %s; <b>Ник:</b> %s; <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s;\n", value.ID, value.Time, value.NickName, value.Code, value.Danger, value.Sector)
+	}
+
+	return str
+}
+func CreateTeam(message *tgbotapi.Message, dbConfig DBconfig) string {
+	str := "Слишком короткое название команды, надо минимум 3 символа."
+	if len(message.CommandArguments()) > 2 {
+		teams := Teams{}
+		teams.Time = fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+		teams.NickName = GetNickName(message.From)
+		teams.Team = strings.ToLower(strings.TrimSpace(message.CommandArguments()))
+		teams.Hash = GetMD5Hash(teams.Team)
+		str = dbConfig.DBCreateTeam(&teams)
+	}
+	return str
+}
+func ShowCodesMy(user *tgbotapi.Message, dbConfig DBconfig) string {
+	var isFound bool
+	var str string
+	dataAll := dbConfig.DBSelectCodesUser(GetNickName(user.From))
+	dataRight := dbConfig.DBSelectCodesRight()
+
+	for _, valueData := range dataRight {
+		strArr := strings.Split(valueData.Code, "|")
+		for _, value := range strArr {
+			isFound = false
+			for _, base := range dataAll {
+				if strings.ToLower(strings.TrimSpace(value)) == base.Code {
+					str += fmt.Sprintf("%d. Код Опасности: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b>\n", valueData.ID, valueData.Danger, valueData.Sector)
+					isFound = true
+					break
+				}
+			}
+
+			if !isFound {
+				str += fmt.Sprintf("%d. Код Опасности: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят\n", valueData.ID, valueData.Danger, valueData.Sector)
+			}
+		}
+	}
+	return str
+}
+func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) {
+	dataRight := dbConfig.DBSelectCodesRight()
+	codes := Codes{}
+	str := ""
+
+	for _, valueData := range dataRight {
+		strArr := strings.Split(valueData.Code, "|")
+		str = "&#9940; Код неверный."
+		for _, value := range strArr {
+			if strings.EqualFold(value, strings.TrimSpace(user.Text)) {
+				str = fmt.Sprintf("&#9989; Снят код <b>№%d</b> с КО %s из сектора %s", valueData.ID, valueData.Danger, valueData.Sector)
+				codes.Time = fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+				codes.NickName = GetNickName(user.From)
+				codes.Code = strings.ToLower(strings.TrimSpace(user.Text))
+				codes.Danger = valueData.Danger
+				codes.Sector = valueData.Sector
+				dbConfig.DBInsertCodesUsers(&codes)
+				break
+			}
+		}
+		_ = SendMessageTelegram(user.Chat.ID, str, user.MessageID, bot)
+	}
 }
 
 func GetMD5Hash(text string) string {
