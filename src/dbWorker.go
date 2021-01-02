@@ -106,8 +106,8 @@ func (confDataBase *DBconfig) DBResetAllCodes() string {
 		"NickName	varchar(100) NOT NULL," +
 		"Code		varchar(300) NOT NULL," +
 		"Danger		varchar(30) NOT NULL," +
-		"Sector		varchar(100) NOT NULL)," +
-		"Team		varchar(100),")
+		"Sector		varchar(100) NOT NULL," +
+		"Team		varchar(100);")
 	if err != nil {
 		resultStr += fmt.Sprintf("ERROR create CodesUser: %s", err)
 	}
@@ -119,13 +119,13 @@ func (confDataBase *DBconfig) DBResetAllCodes() string {
 		"Sector	varchar(100) NOT NULL);")
 
 	if err != nil {
-		resultStr += fmt.Sprintf("ERROR create CodesRight: %s", err)
+		resultStr += fmt.Sprintf("ERROR create CodesRight: %s\n", err)
 	}
 	resultStr += "\n\n&#9940;БД удалены и созданы заново!"
 
 	_, err = db.Exec("CREATE INDEX ON CodesUser(NickName text_pattern_ops);")
 	if err != nil {
-		resultStr += fmt.Sprintf("ERROR create index: %s", err)
+		resultStr += fmt.Sprintf("ERROR create index: %s\n", err)
 	}
 	resultStr += "\n\n&#9940;Индекс NickName в БД CodesUser создан!"
 
