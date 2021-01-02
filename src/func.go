@@ -15,6 +15,12 @@ func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) 
 	codes := Codes{}
 	str := ""
 
+	myTeam := ""
+	users := dbConfig.DBSelectUsers(fmt.Sprintf("WHERE NickName= '%s'", GetNickName(user.From)))
+	if len(users) > 0 {
+		myTeam = users[0].Team
+	}
+
 	for _, valueData := range dataRight {
 		strArr := strings.Split(valueData.Code, "|")
 		str = "&#9940; Код неверный."
@@ -26,6 +32,7 @@ func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) 
 				codes.Code = strings.ToLower(strings.TrimSpace(user.Text))
 				codes.Danger = valueData.Danger
 				codes.Sector = valueData.Sector
+				codes.Team = myTeam
 				dbConfig.DBInsertCodesUsers(&codes)
 				break
 			}

@@ -46,6 +46,7 @@ type Codes struct {
 	NickName string
 	Code     string
 	Danger   string
+	Team     string
 	Sector   string
 }
 
