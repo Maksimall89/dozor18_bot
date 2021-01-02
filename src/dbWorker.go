@@ -26,7 +26,7 @@ func (confDataBase *DBconfig) DBInsertCodesUsers(codes *Codes) {
 func (confDataBase *DBconfig) DBInsertCodesRight(addData string) string {
 	strArr := strings.Split(addData, ",")
 	if len(strArr) < 3 {
-		return "Слишком короткая строка: /add Code,Danger,Sector"
+		return "Нет всех аргументов: /add Code,Danger,Sector"
 	}
 
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
@@ -45,7 +45,7 @@ func (confDataBase *DBconfig) DBInsertCodesRight(addData string) string {
 }
 func (confDataBase *DBconfig) DBDeleteCodesRight(deleteStr string) string {
 	if len(deleteStr) < 2 {
-		return "Слишком короткая строка: /delete CodeOld"
+		return "Нет всех аргументов: /delete CodeOld"
 	}
 
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
@@ -255,7 +255,7 @@ func (confDataBase *DBconfig) DBCreateTeam(teams *Teams) string {
 		log.Println(err)
 		return err.Error()
 	}
-	return fmt.Sprintf("Команда <b>%s</b> создана, для вступления в неё введите: <code>/join %s %s </code>", teams.Team, teams.Team, teams.Hash)
+	return fmt.Sprintf("&#9989;Команда <b>%s</b> создана, для вступления в неё введите: <code>/join %s %s </code>", teams.Team, teams.Team, teams.Hash)
 }
 func (confDataBase *DBconfig) DBSelectUsers(condition string) []Users {
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
@@ -331,5 +331,5 @@ func (confDataBase *DBconfig) DBInsertUser(users *Users) string {
 		return err.Error()
 	}
 
-	return fmt.Sprintf("&#10004;Игрок %s <b>добавлен</b> в команду %s.", users.NickName, users.Team)
+	return fmt.Sprintf("&#9989;Игрок %s <b>добавлен</b> в команду %s.", users.NickName, users.Team)
 }
