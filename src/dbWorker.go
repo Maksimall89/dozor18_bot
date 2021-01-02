@@ -26,7 +26,7 @@ func (confDataBase *DBconfig) DBInsertCodesUsers(codes *Codes) {
 func (confDataBase *DBconfig) DBInsertCodesRight(addData string) string {
 	strArr := strings.Split(addData, ",")
 	if len(strArr) < 3 {
-		return "Нет всех аргументов: /add Code,Danger,Sector"
+		return "&#10071;Нет всех аргументов: /add Code,Danger,Sector"
 	}
 
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
@@ -45,7 +45,7 @@ func (confDataBase *DBconfig) DBInsertCodesRight(addData string) string {
 }
 func (confDataBase *DBconfig) DBDeleteCodesRight(deleteStr string) string {
 	if len(deleteStr) < 2 {
-		return "Нет всех аргументов: /delete CodeOld"
+		return "&#10071;Нет всех аргументов: /delete CodeOld"
 	}
 
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
@@ -64,7 +64,7 @@ func (confDataBase *DBconfig) DBDeleteCodesRight(deleteStr string) string {
 func (confDataBase *DBconfig) DBUpdateCodesRight(updateData string) string {
 	strArr := strings.Split(updateData, ",")
 	if len(strArr) < 4 {
-		return "Нет всех аргументов: /update CodeNew,Danger,Sector,CodeOld"
+		return "&#10071;Нет всех аргументов: /update CodeNew,Danger,Sector,CodeOld"
 	}
 
 	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)

@@ -68,7 +68,6 @@ func main() {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowCodesAll(dbConfig), 0, bot)
 				continue
 			case "add":
-				// /add code1,1,1
 				arrCodes := strings.Split(update.Message.Text, "\n")
 				for _, code := range arrCodes {
 					code = strings.Replace(code, "/add", "", -1)
@@ -77,11 +76,9 @@ func main() {
 				}
 				continue
 			case "update":
-				// /update CodeNew,Danger,Sector,CodeOld
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBUpdateCodesRight(update.Message.CommandArguments()), update.Message.MessageID, bot)
 				continue
 			case "delete":
-				// /delete code1
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBDeleteCodesRight(update.Message.CommandArguments()), update.Message.MessageID, bot)
 				continue
 			case "resetteams":
@@ -90,7 +87,7 @@ func main() {
 			case "create":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.CreateTeam(update.Message, dbConfig), update.Message.MessageID, bot)
 				continue
-			case "listall":
+			case "listteams":
 				str = "Список всех команд:\n"
 				teams := dbConfig.DBSelectTeam("")
 				for _, value := range teams {
@@ -98,17 +95,14 @@ func main() {
 				}
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				continue
+			case "listusers":
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowUsers(update.Message, false, dbConfig), update.Message.MessageID, bot)
+				continue
 			case "list":
-				// TODO show only my team
-				str = "Список всех участников команд:\n"
-				users := dbConfig.DBSelectUsers("")
-				for key, value := range users {
-					str += fmt.Sprintf("%d. <b>%s</b> %s\n", key, value.NickName, value.Team)
-				}
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowUsers(update.Message, true, dbConfig), update.Message.MessageID, bot)
 				continue
 			case "join":
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.AddUser(update.Message, dbConfig), update.Message.MessageID, bot)
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.JoinTeam(update.Message, dbConfig), update.Message.MessageID, bot)
 				continue
 			case "leave":
 				continue

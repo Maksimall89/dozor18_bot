@@ -10,24 +10,28 @@ import (
 	"time"
 )
 
-func AddUser(addUser *tgbotapi.Message, dbConfig DBconfig) string {
-	strArr := strings.Split(addUser.CommandArguments(), ",")
-	if len(strArr) < 2 {
-		return "&#10071;Слишком короткая строка: /join team, secret key"
-	}
-	for number, value := range strArr {
-		strArr[number] = strings.ToLower(strings.TrimSpace(value))
-	}
-	user := Users{}
-	team := dbConfig.DBSelectTeam(strArr[0])
-	if len(team) != 1 || strArr[1] != team[0].Hash {
-		return "&#10071;Неверный ключ или имя команды"
-	}
-	user.NickName = GetNickName(addUser.From)
-	user.Time = GetTime()
-	user.Team = strArr[1]
+func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) {
+	dataRight := dbConfig.DBSelectCodesRight()
+	codes := Codes{}
+	str := ""
 
-	return dbConfig.DBInsertUser(&user)
+	for _, valueData := range dataRight {
+		strArr := strings.Split(valueData.Code, "|")
+		str = "&#9940; Код неверный."
+		for _, value := range strArr {
+			if strings.EqualFold(value, strings.TrimSpace(user.Text)) {
+				str = fmt.Sprintf("&#9989; Снят код <b>№%d</b> с КО %s из сектора %s", valueData.ID, valueData.Danger, valueData.Sector)
+				codes.Time = GetTime()
+				codes.NickName = GetNickName(user.From)
+				codes.Code = strings.ToLower(strings.TrimSpace(user.Text))
+				codes.Danger = valueData.Danger
+				codes.Sector = valueData.Sector
+				dbConfig.DBInsertCodesUsers(&codes)
+				break
+			}
+		}
+		_ = SendMessageTelegram(user.Chat.ID, str, user.MessageID, bot)
+	}
 }
 func ShowCodesAll(dbConfig DBconfig) string {
 	dataAllRight := dbConfig.DBSelectCodesRight()
@@ -44,18 +48,6 @@ func ShowCodesAll(dbConfig DBconfig) string {
 		str += fmt.Sprintf("%d. %s; <b>Ник:</b> %s; <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s;\n", value.ID, value.Time, value.NickName, value.Code, value.Danger, value.Sector)
 	}
 
-	return str
-}
-func CreateTeam(message *tgbotapi.Message, dbConfig DBconfig) string {
-	str := "&#10071;Слишком короткое название команды, надо минимум 3 символа."
-	if len(message.CommandArguments()) > 2 {
-		teams := Teams{}
-		teams.Time = GetTime()
-		teams.NickName = GetNickName(message.From)
-		teams.Team = strings.ToLower(strings.TrimSpace(message.CommandArguments()))
-		teams.Hash = GetMD5Hash(teams.Team)
-		str = dbConfig.DBCreateTeam(&teams)
-	}
 	return str
 }
 func ShowCodesMy(user *tgbotapi.Message, dbConfig DBconfig) string {
@@ -83,30 +75,49 @@ func ShowCodesMy(user *tgbotapi.Message, dbConfig DBconfig) string {
 	}
 	return str
 }
-func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) {
-	dataRight := dbConfig.DBSelectCodesRight()
-	codes := Codes{}
-	str := ""
-
-	for _, valueData := range dataRight {
-		strArr := strings.Split(valueData.Code, "|")
-		str = "&#9940; Код неверный."
-		for _, value := range strArr {
-			if strings.EqualFold(value, strings.TrimSpace(user.Text)) {
-				str = fmt.Sprintf("&#9989; Снят код <b>№%d</b> с КО %s из сектора %s", valueData.ID, valueData.Danger, valueData.Sector)
-				codes.Time = GetTime()
-				codes.NickName = GetNickName(user.From)
-				codes.Code = strings.ToLower(strings.TrimSpace(user.Text))
-				codes.Danger = valueData.Danger
-				codes.Sector = valueData.Sector
-				dbConfig.DBInsertCodesUsers(&codes)
-				break
-			}
-		}
-		_ = SendMessageTelegram(user.Chat.ID, str, user.MessageID, bot)
+func CreateTeam(message *tgbotapi.Message, dbConfig DBconfig) string {
+	str := "&#10071;Слишком короткое название команды, надо минимум 3 символа."
+	if len(message.CommandArguments()) > 2 {
+		teams := Teams{}
+		teams.Time = GetTime()
+		teams.NickName = GetNickName(message.From)
+		teams.Team = strings.ToLower(strings.TrimSpace(message.CommandArguments()))
+		teams.Hash = GetMD5Hash(teams.Team)
+		str = dbConfig.DBCreateTeam(&teams)
 	}
+	return str
 }
+func JoinTeam(addUser *tgbotapi.Message, dbConfig DBconfig) string {
+	strArr := strings.Split(addUser.CommandArguments(), ",")
+	if len(strArr) < 2 {
+		return "&#10071;Нет всех аргументов:  /join team, secret key"
+	}
+	for number, value := range strArr {
+		strArr[number] = strings.ToLower(strings.TrimSpace(value))
+	}
+	user := Users{}
+	team := dbConfig.DBSelectTeam(strArr[0])
+	if len(team) != 1 || strArr[1] != team[0].Hash {
+		return "&#10071;Неверный ключ или имя команды"
+	}
+	user.NickName = GetNickName(addUser.From)
+	user.Time = GetTime()
+	user.Team = strArr[1]
 
+	return dbConfig.DBInsertUser(&user)
+}
+func ShowUsers(team *tgbotapi.Message, isAdmin bool, dbConfig DBconfig) string {
+	if len(team.CommandArguments()) < 3 && !isAdmin {
+		return "&#10071;Слишком короткое имя команды!"
+	}
+	condition := strings.ToLower(team.CommandArguments())
+	str := fmt.Sprintf("Список всех участников команды <b>%s</b>:\n", condition)
+	users := dbConfig.DBSelectUsers(condition)
+	for key, value := range users {
+		str += fmt.Sprintf("%d. <b>%s</b> %s\n", key, value.NickName, value.Team)
+	}
+	return str
+}
 func GetTime() string {
 	return fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
 }
@@ -141,8 +152,9 @@ func GetListHelps(from *tgbotapi.User, adminNickname string) (commandList string
 		{true, "/delete - удалить указанный код;\n"},
 		{true, "/create - создать команду;\n"},
 		{true, "/join - вступить в команду;\n"},
-		{true, "/list - список участников;\n"},
-		{true, "/listall - список всех команд;\n"},
+		{true, "/list - список участников команды;\n"},
+		{true, "/listusers - список участников команд;\n"},
+		{true, "/listteams - список всех команд;\n"},
 		{true, "/leave - выйти из команды;\n"},
 		{true, "/resetteams - удалить все команды;\n"},
 	}
