@@ -17,8 +17,8 @@ func (confDataBase *DBconfig) DBInsertCodesUsers(codes *Codes) {
 	}
 	defer db.Close()
 
-	_, err = db.Exec("INSERT INTO CodesUser (Time, NickName,  Code, Danger, Sector) VALUES ($1, $2, $3, $4, $5)",
-		codes.Time, codes.NickName, codes.Code, codes.Danger, codes.Sector)
+	_, err = db.Exec("INSERT INTO CodesUser (Time, NickName,  Code, Danger, Sector, Team) VALUES ($1, $2, $3, $4, $5, $6)",
+		codes.Time, codes.NickName, codes.Code, codes.Danger, codes.Sector, codes.Team)
 	if err != nil {
 		log.Println(err)
 	}

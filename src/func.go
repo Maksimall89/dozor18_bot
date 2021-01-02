@@ -21,9 +21,9 @@ func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) 
 		myTeam = users[0].Team
 	}
 
+	str = "&#9940; Код неверный."
 	for _, valueData := range dataRight {
 		strArr := strings.Split(valueData.Code, "|")
-		str = "&#9940; Код неверный."
 		for _, value := range strArr {
 			if strings.EqualFold(value, strings.TrimSpace(user.Text)) {
 				str = fmt.Sprintf("&#9989; Снят код <b>№%d</b> с КО %s из сектора %s", valueData.ID, valueData.Danger, valueData.Sector)
@@ -37,8 +37,8 @@ func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) 
 				break
 			}
 		}
-		_ = SendMessageTelegram(user.Chat.ID, str, user.MessageID, bot)
 	}
+	_ = SendMessageTelegram(user.Chat.ID, str, user.MessageID, bot)
 }
 func ShowCodesAll(dbConfig DBconfig) string {
 	dataAllRight := dbConfig.DBSelectCodesRight()
