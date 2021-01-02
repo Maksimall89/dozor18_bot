@@ -55,7 +55,7 @@ func ShowCodesMy(user *tgbotapi.Message, dbConfig DBconfig) string {
 	condition := fmt.Sprintf("WHERE NickName = '%s'", GetNickName(user.From))
 	str := fmt.Sprintf("Коды <b>%s</b>:\n", user.From)
 	team := dbConfig.DBSelectTeam(GetNickName(user.From))
-	if len(team[0].Team) != 0 {
+	if len(team) > 0 {
 		condition = fmt.Sprintf("WHERE Team = '%s'", team[0].Team)
 		str = fmt.Sprintf("Коды команды <b>%s</b>:\n", team[0].Team)
 	}
@@ -122,8 +122,8 @@ func ShowUsers(team *tgbotapi.Message, isAdmin bool, dbConfig DBconfig) string {
 	if len(team.CommandArguments()) < 3 && !isAdmin {
 		return "&#10071;Слишком короткое имя команды!"
 	}
-	condition := strings.ToLower(team.CommandArguments())
-	str := fmt.Sprintf("Список всех участников команды <b>%s</b>:\n", condition)
+	condition := fmt.Sprintf("WHERE Team = '%s'", strings.ToLower(team.CommandArguments()))
+	str := fmt.Sprintf("Список всех участников команды <b>%s</b>:\n", team.CommandArguments())
 	users := dbConfig.DBSelectUsers(condition)
 	for key, value := range users {
 		str += fmt.Sprintf("%d. <b>%s</b> %s\n", key, value.NickName, value.Team)
