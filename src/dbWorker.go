@@ -166,7 +166,7 @@ func (confDataBase *DBconfig) DBSelectCodesUser(condition string) []Codes {
 
 	query := "SELECT ID, Time, NickName, Code, Danger, Sector FROM CodesUser"
 	if condition != "" {
-		query = fmt.Sprintf("SELECT ID, Time, NickName, Code, Danger, Sector FROM CodesUser WHERE NickName = %s", condition)
+		query = fmt.Sprintf("SELECT ID, Time, NickName, Code, Danger, Sector FROM CodesUser WHERE NickName = '%s'", condition)
 	}
 	rows, err := db.Query(query)
 	if err != nil {
@@ -266,7 +266,7 @@ func (confDataBase *DBconfig) DBSelectUsers(condition string) []Users {
 
 	query := "SELECT NickName, Team FROM Users"
 	if condition != "" {
-		query = fmt.Sprintf("SELECT NickName, Team FROM Users WHERE Team = %s", condition)
+		query = fmt.Sprintf("SELECT NickName, Team FROM Users WHERE Team = '%s'", condition)
 	}
 	rows, err := db.Query(query)
 	if err != nil {
@@ -296,7 +296,7 @@ func (confDataBase *DBconfig) DBSelectTeam(condition string) []Teams {
 
 	query := "SELECT ID, Time, Team, Hash, NickName FROM Teams"
 	if condition != "" {
-		query = fmt.Sprintf("SELECT ID, Time, Team, Hash, NickName FROM Teams WHERE Team = %s", condition)
+		query = fmt.Sprintf("SELECT ID, Time, Team, Hash, NickName FROM Teams WHERE Team = '%s'", condition)
 	}
 	rows, err := db.Query(query)
 	if err != nil {
