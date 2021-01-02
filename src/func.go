@@ -13,7 +13,7 @@ import (
 func AddUser(addUser *tgbotapi.Message, dbConfig DBconfig) string {
 	strArr := strings.Split(addUser.CommandArguments(), ",")
 	if len(strArr) < 2 {
-		return "Слишком короткая строка: /join team, secret key"
+		return "&#10071;Слишком короткая строка: /join team, secret key"
 	}
 	for number, value := range strArr {
 		strArr[number] = strings.ToLower(strings.TrimSpace(value))
@@ -21,10 +21,10 @@ func AddUser(addUser *tgbotapi.Message, dbConfig DBconfig) string {
 	user := Users{}
 	team := dbConfig.DBSelectTeam(strArr[0])
 	if len(team) != 1 || strArr[1] != team[0].Hash {
-		return "Неверный ключ или имя команды"
+		return "&#10071;Неверный ключ или имя команды"
 	}
 	user.NickName = GetNickName(addUser.From)
-	user.Time = fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+	user.Time = GetTime()
 	user.Team = strArr[1]
 
 	return dbConfig.DBInsertUser(&user)
@@ -47,10 +47,10 @@ func ShowCodesAll(dbConfig DBconfig) string {
 	return str
 }
 func CreateTeam(message *tgbotapi.Message, dbConfig DBconfig) string {
-	str := "Слишком короткое название команды, надо минимум 3 символа."
+	str := "&#10071;Слишком короткое название команды, надо минимум 3 символа."
 	if len(message.CommandArguments()) > 2 {
 		teams := Teams{}
-		teams.Time = fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+		teams.Time = GetTime()
 		teams.NickName = GetNickName(message.From)
 		teams.Team = strings.ToLower(strings.TrimSpace(message.CommandArguments()))
 		teams.Hash = GetMD5Hash(teams.Team)
@@ -94,7 +94,7 @@ func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) 
 		for _, value := range strArr {
 			if strings.EqualFold(value, strings.TrimSpace(user.Text)) {
 				str = fmt.Sprintf("&#9989; Снят код <b>№%d</b> с КО %s из сектора %s", valueData.ID, valueData.Danger, valueData.Sector)
-				codes.Time = fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+				codes.Time = GetTime()
 				codes.NickName = GetNickName(user.From)
 				codes.Code = strings.ToLower(strings.TrimSpace(user.Text))
 				codes.Danger = valueData.Danger
@@ -107,6 +107,9 @@ func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) 
 	}
 }
 
+func GetTime() string {
+	return fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+}
 func GetMD5Hash(text string) string {
 	hasher := md5.New()
 	_, _ = hasher.Write([]byte(text))
