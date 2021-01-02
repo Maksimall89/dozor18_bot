@@ -52,8 +52,14 @@ func ShowCodesAll(dbConfig DBconfig) string {
 }
 func ShowCodesMy(user *tgbotapi.Message, dbConfig DBconfig) string {
 	var isFound bool
-	var str string
-	dataAll := dbConfig.DBSelectCodesUser(GetNickName(user.From))
+	condition := fmt.Sprintf("WHERE NickName = '%s'", GetNickName(user.From))
+	str := fmt.Sprintf("Коды <b>%s</b>:\n", user.From)
+	team := dbConfig.DBSelectTeam(GetNickName(user.From))
+	if len(team[0].Team) != 0 {
+		condition = fmt.Sprintf("WHERE Team = '%s'", team[0].Team)
+		str = fmt.Sprintf("Коды команды <b>%s</b>:\n", team[0].Team)
+	}
+	dataAll := dbConfig.DBSelectCodesUser(condition)
 	dataRight := dbConfig.DBSelectCodesRight()
 
 	for _, valueData := range dataRight {
@@ -67,7 +73,6 @@ func ShowCodesMy(user *tgbotapi.Message, dbConfig DBconfig) string {
 					break
 				}
 			}
-
 			if !isFound {
 				str += fmt.Sprintf("%d. Код Опасности: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят\n", valueData.ID, valueData.Danger, valueData.Sector)
 			}
@@ -76,16 +81,23 @@ func ShowCodesMy(user *tgbotapi.Message, dbConfig DBconfig) string {
 	return str
 }
 func CreateTeam(message *tgbotapi.Message, dbConfig DBconfig) string {
-	str := "&#10071;Слишком короткое название команды, надо минимум 3 символа."
-	if len(message.CommandArguments()) > 2 {
-		teams := Teams{}
-		teams.Time = GetTime()
-		teams.NickName = GetNickName(message.From)
-		teams.Team = strings.ToLower(strings.TrimSpace(message.CommandArguments()))
-		teams.Hash = GetMD5Hash(teams.Team)
-		str = dbConfig.DBCreateTeam(&teams)
+	if len(message.CommandArguments()) < 3 {
+		return "&#10071;Слишком короткое название команды, надо минимум 3 символа."
 	}
-	return str
+
+	team := Teams{}
+	team.Time = GetTime()
+	team.NickName = GetNickName(message.From)
+	team.Team = strings.ToLower(strings.TrimSpace(message.CommandArguments()))
+	team.Hash = GetMD5Hash(team.Team)
+
+	teams := dbConfig.DBSelectTeam("")
+	for _, value := range teams {
+		if value.Team == team.Team {
+			return "&#10071; Такая команда уже есть."
+		}
+	}
+	return dbConfig.DBCreateTeam(&team)
 }
 func JoinTeam(addUser *tgbotapi.Message, dbConfig DBconfig) string {
 	strArr := strings.Split(addUser.CommandArguments(), ",")
