@@ -54,10 +54,10 @@ func ShowCodesMy(user *tgbotapi.Message, dbConfig DBconfig) string {
 	var isFound bool
 	condition := fmt.Sprintf("WHERE NickName = '%s'", GetNickName(user.From))
 	str := fmt.Sprintf("Коды <b>%s</b>:\n", user.From)
-	team := dbConfig.DBSelectTeam(GetNickName(user.From))
-	if len(team) > 0 {
-		condition = fmt.Sprintf("WHERE Team = '%s'", team[0].Team)
-		str = fmt.Sprintf("Коды команды <b>%s</b>:\n", team[0].Team)
+	users := dbConfig.DBSelectUsers(fmt.Sprintf("WHERE NickName= '%s'", GetNickName(user.From)))
+	if len(users) > 0 {
+		condition = fmt.Sprintf("WHERE Team = '%s'", users[0].Team)
+		str = fmt.Sprintf("Коды команды <b>%s</b>:\n", users[0].Team)
 	}
 	dataAll := dbConfig.DBSelectCodesUser(condition)
 	dataRight := dbConfig.DBSelectCodesRight()
@@ -108,7 +108,7 @@ func JoinTeam(addUser *tgbotapi.Message, dbConfig DBconfig) string {
 		strArr[number] = strings.ToLower(strings.TrimSpace(value))
 	}
 	user := Users{}
-	team := dbConfig.DBSelectTeam(strArr[0])
+	team := dbConfig.DBSelectTeam(fmt.Sprintf("WHERE Team = '%s'", strArr[0]))
 	if len(team) != 1 || strArr[1] != team[0].Hash {
 		return "&#10071;Неверный ключ или имя команды"
 	}

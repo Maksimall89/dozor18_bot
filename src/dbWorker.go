@@ -164,10 +164,8 @@ func (confDataBase *DBconfig) DBSelectCodesUser(condition string) []Codes {
 	}
 	defer db.Close()
 
-	query := "SELECT ID, Time, NickName, Code, Danger, Sector FROM CodesUser"
-	if condition != "" {
-		query = fmt.Sprintf("SELECT ID, Time, NickName, Code, Danger, Sector FROM CodesUser %s", condition)
-	}
+	query := fmt.Sprintf("SELECT ID, Time, NickName, Code, Danger, Sector FROM CodesUser %s", condition)
+
 	rows, err := db.Query(query)
 	if err != nil {
 		log.Printf("Unable to SELECT CodesUser: %v\n", err)
@@ -266,10 +264,7 @@ func (confDataBase *DBconfig) DBSelectUsers(condition string) []Users {
 	}
 	defer db.Close()
 
-	query := "SELECT NickName, Team FROM Users"
-	if condition != "" {
-		query = fmt.Sprintf("SELECT NickName, Team FROM Users %s", condition)
-	}
+	query := fmt.Sprintf("SELECT NickName, Team FROM Users %s", condition)
 	rows, err := db.Query(query)
 	if err != nil {
 		log.Printf("Unable to SELECT Users: %v\n", err)
@@ -296,10 +291,7 @@ func (confDataBase *DBconfig) DBSelectTeam(condition string) []Teams {
 	}
 	defer db.Close()
 
-	query := "SELECT ID, Time, Team, Hash, NickName FROM Teams"
-	if condition != "" {
-		query = fmt.Sprintf("SELECT ID, Time, Team, Hash, NickName FROM Teams WHERE Team = '%s'", condition)
-	}
+	query := fmt.Sprintf("SELECT ID, Time, Team, Hash, NickName FROM Teams %s", condition)
 	rows, err := db.Query(query)
 	if err != nil {
 		log.Printf("Unable to SELECT Teams: %v\n", err)
