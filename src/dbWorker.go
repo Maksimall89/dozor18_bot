@@ -166,7 +166,7 @@ func (confDataBase *DBconfig) DBSelectCodesUser(condition string) []Codes {
 
 	query := "SELECT ID, Time, NickName, Code, Danger, Sector FROM CodesUser"
 	if condition != "" {
-		query = fmt.Sprintf("SELECT ID, Time, Team, Hash, NickName FROM CodesUser WHERE NickName = %s", condition)
+		query = fmt.Sprintf("SELECT ID, Time, NickName, Code, Danger, Sector FROM CodesUser WHERE NickName = %s", condition)
 	}
 	rows, err := db.Query(query)
 	if err != nil {
