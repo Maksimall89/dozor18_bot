@@ -64,8 +64,8 @@ func ShowCodesMy(user *tgbotapi.Message, dbConfig DBconfig) string {
 
 	for _, valueData := range dataRight {
 		strArr := strings.Split(valueData.Code, "|")
+		isFound = false
 		for _, value := range strArr {
-			isFound = false
 			for _, base := range dataAll {
 				if strings.ToLower(strings.TrimSpace(value)) == base.Code {
 					str += fmt.Sprintf("%d. Код Опасности: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b>\n", valueData.ID, valueData.Danger, valueData.Sector)
@@ -73,9 +73,9 @@ func ShowCodesMy(user *tgbotapi.Message, dbConfig DBconfig) string {
 					break
 				}
 			}
-			if !isFound {
-				str += fmt.Sprintf("%d. Код Опасности: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят\n", valueData.ID, valueData.Danger, valueData.Sector)
-			}
+		}
+		if !isFound {
+			str += fmt.Sprintf("%d. Код Опасности: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят\n", valueData.ID, valueData.Danger, valueData.Sector)
 		}
 	}
 	return str
@@ -124,6 +124,9 @@ func ShowUsers(team *tgbotapi.Message, isAdmin bool, dbConfig DBconfig) string {
 	}
 	condition := fmt.Sprintf("WHERE Team = '%s'", strings.ToLower(team.CommandArguments()))
 	str := fmt.Sprintf("Список всех участников команды <b>%s</b>:\n", team.CommandArguments())
+	if isAdmin {
+		condition = ""
+	}
 	users := dbConfig.DBSelectUsers(condition)
 	for key, value := range users {
 		str += fmt.Sprintf("%d. <b>%s</b> %s\n", key, value.NickName, value.Team)
