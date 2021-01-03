@@ -113,7 +113,7 @@ func CreateTeam(message *tgbotapi.Message, dbConfig Config) string {
 		return "&#10071;Слишком короткое название команды, надо минимум 3 символа."
 	}
 
-	if !strings.ContainsAny(strings.ToLower(message.CommandArguments()), "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнопрстуфхцчшщъыьэюя0123456789") {
+	if !strings.ContainsAny(strings.ToLower(message.CommandArguments()), "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнопрстуфхцчшщъыьэюя0123456789 ") {
 		return "&#10071;Недопустимые символы в названии команды. Можно использовать лишь буквы и цифры русского и английского алфавита."
 	}
 
@@ -141,7 +141,7 @@ func JoinTeam(message *tgbotapi.Message, dbConfig Config) string {
 	user := Users{}
 	team := dbConfig.DBSelectTeam(fmt.Sprintf(WhereTeam, strArr[0]))
 	if len(team) != 1 || strArr[1] != team[0].Hash {
-		return "&#10071;Неверный ключ или имя команды"
+		return "&#10071;Неверный ключ или название команды"
 	}
 	user.UserID, user.NickName = GetNickName(message.From)
 	user.Time = GetTime()
