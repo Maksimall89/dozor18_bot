@@ -7,6 +7,8 @@ import (
 	"testing"
 )
 
+const errorExpect = "For %v\nexpected %s\ngot %s"
+
 func TestGetNickName(t *testing.T) {
 	t.Parallel()
 
@@ -36,7 +38,7 @@ func TestGetMD5Hash(t *testing.T) {
 	output := "098f6bcd4621d373ca"
 	result := GetMD5Hash(input)
 	if result != output {
-		t.Errorf("For %s\nexpected %s\ngot %s", input, output, result)
+		t.Errorf(errorExpect, input, output, result)
 	}
 }
 func TestGetListHelps(t *testing.T) {
@@ -63,7 +65,7 @@ func TestGetListHelps(t *testing.T) {
 	for _, pair := range tests {
 		result := GetListHelps(pair.telegramNickName, pair.OwnID)
 		if result != pair.output {
-			t.Errorf("For %v\nexpected %s\ngot %s", pair.telegramNickName, pair.output, result)
+			t.Errorf(errorExpect, pair.telegramNickName, pair.output, result)
 		}
 	}
 }
@@ -82,7 +84,7 @@ func TestCheckMessage(t *testing.T) {
 	}
 	for _, pair := range tests {
 		result := CheckMessage(pair.input)
-		assert.EqualErrorf(t, result, rightErr, "For %v\nexpected %s\ngot %s", pair.input, pair.output, result)
+		assert.EqualErrorf(t, result, rightErr, errorExpect, pair.input, pair.output, result)
 	}
 
 	tests = []testPair{
@@ -92,7 +94,7 @@ func TestCheckMessage(t *testing.T) {
 	for _, pair := range tests {
 		result := CheckMessage(pair.input)
 		if result != nil {
-			t.Errorf("For %v\nexpected %s\ngot %s", pair.input, pair.output, result)
+			t.Errorf(errorExpect, pair.input, pair.output, result)
 		}
 	}
 }
