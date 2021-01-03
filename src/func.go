@@ -3,6 +3,7 @@ package src
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"gopkg.in/telegram-bot-api.v4"
 	"log"
@@ -112,9 +113,9 @@ func CreateTeam(message *tgbotapi.Message, dbConfig Config) string {
 	if len(message.CommandArguments()) < 3 {
 		return "&#10071;Слишком короткое название команды, надо минимум 3 символа."
 	}
-
-	if strings.ContainsAny(strings.ToLower(message.CommandArguments()), "\"`~-\\=:;/,.'*+@#№%$%^&(){}[]|") {
-		return "&#10071;Недопустимые символы в названии команды. Можно использовать лишь буквы и цифры русского и английского алфавита."
+	err := CheckMessage(message.CommandArguments())
+	if err != nil {
+		return fmt.Sprintf("%s", err)
 	}
 
 	team := Teams{}
@@ -130,8 +131,9 @@ func JoinTeam(message *tgbotapi.Message, dbConfig Config) string {
 	if len(strArr) < 2 {
 		return "&#10071;Нет всех аргументов: /join team, secret key"
 	}
-	if strings.ContainsAny(strings.ToLower(strArr[0]), "\"`~-\\=:;/,.'*+@#№%$%^&(){}[]|") {
-		return "&#10071;Недопустимые символы в названии команды. Можно использовать лишь буквы и цифры русского и английского алфавита."
+	err := CheckMessage(strArr[0])
+	if err != nil {
+		return fmt.Sprintf("%s", err)
 	}
 	for number, value := range strArr {
 		strArr[number] = strings.ToLower(strings.TrimSpace(value))
@@ -260,6 +262,12 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 				return err
 			}
 		}
+	}
+	return nil
+}
+func CheckMessage(message string) error {
+	if strings.ContainsAny(strings.ToLower(message), "\"`~-\\=:;/,.'*+@#№%$%^&(){}[]|") {
+		return errors.New("&#10071;Недопустимые символы в сообщении. Можно использовать лишь буквы и цифры русского и английского алфавита.")
 	}
 	return nil
 }

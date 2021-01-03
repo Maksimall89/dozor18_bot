@@ -1,6 +1,8 @@
 package src
 
 import (
+	_ "github.com/stretchr/testify"
+	"github.com/stretchr/testify/assert"
 	"gopkg.in/telegram-bot-api.v4"
 	"testing"
 )
@@ -62,6 +64,35 @@ func TestGetListHelps(t *testing.T) {
 		result := GetListHelps(pair.telegramNickName, pair.OwnID)
 		if result != pair.output {
 			t.Errorf("For %v\nexpected %s\ngot %s", pair.telegramNickName, pair.output, result)
+		}
+	}
+}
+func TestCheckMessage(t *testing.T) {
+	t.Parallel()
+
+	type testPair struct {
+		input  string
+		output string
+	}
+
+	rightErr := ("&#10071;Недопустимые символы в сообщении. Можно использовать лишь буквы и цифры русского и английского алфавита.")
+	var tests = []testPair{
+		{"dfg=dfg", rightErr},
+		{"5*5=10", rightErr},
+	}
+	for _, pair := range tests {
+		result := CheckMessage(pair.input)
+		assert.EqualErrorf(t, result, rightErr, "For %v\nexpected %s\ngot %s", pair.input, pair.output, result)
+	}
+
+	tests = []testPair{
+		{"qwe", ""},
+		{"qwfsdfSSFS efsdf", ""},
+	}
+	for _, pair := range tests {
+		result := CheckMessage(pair.input)
+		if result != nil {
+			t.Errorf("For %v\nexpected %s\ngot %s", pair.input, pair.output, result)
 		}
 	}
 }
