@@ -68,7 +68,7 @@ func (confDataBase *Config) DBSelectCodesUser(condition string) []Codes {
 	}
 	defer db.Close()
 
-	query := fmt.Sprintf("SELECT ID, Time, NickName, Code, Danger, Sector, UserID FROM CodesUser %s", condition)
+	query := fmt.Sprintf("SELECT ID, Time, NickName, UserID, Code, Danger, Sector, Team FROM CodesUser %s", condition)
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -79,7 +79,7 @@ func (confDataBase *Config) DBSelectCodesUser(condition string) []Codes {
 	var data []Codes
 	for rows.Next() {
 		d := Codes{}
-		err := rows.Scan(&d.ID, &d.Time, &d.NickName, &d.Code, &d.Danger, &d.Sector, &d.UserID)
+		err := rows.Scan(&d.ID, &d.Time, &d.NickName, &d.UserID, &d.Code, &d.Danger, &d.Sector, &d.Team)
 		if err != nil {
 			log.Println(err)
 			continue
