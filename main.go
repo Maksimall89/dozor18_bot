@@ -84,9 +84,6 @@ func main() {
 			case "resetteams":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBResetUser(), update.Message.MessageID, bot)
 				continue
-			case "create":
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.CreateTeam(update.Message, dbConfig), update.Message.MessageID, bot)
-				continue
 			case "listteams":
 				str = "Список всех команд:\n"
 				teams := dbConfig.DBSelectTeam("")
@@ -94,21 +91,6 @@ func main() {
 					str += fmt.Sprintf("%d. <b>%s</b>, %s, <code>%s</code>, %s\n", value.ID, value.Team, value.NickName, value.Hash, value.Time)
 				}
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
-				continue
-			case "listusers":
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowUsers(update.Message, false, dbConfig), update.Message.MessageID, bot)
-				continue
-			case "list":
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowUsers(update.Message, true, dbConfig), update.Message.MessageID, bot)
-				continue
-			case "join":
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.JoinTeam(update.Message, dbConfig), update.Message.MessageID, bot)
-				continue
-			case "leave":
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBDeleteUser(update.Message.From.ID), update.Message.MessageID, bot)
-				continue
-			case "invite":
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetInvite(update.Message, dbConfig), update.Message.MessageID, bot)
 				continue
 			}
 		}
@@ -133,6 +115,24 @@ func main() {
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">dozor18.ru</a>.`, update.Message.MessageID, bot)
 		case "help", "start":
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetListHelps(update.Message.From, configuration.OwnID), update.Message.MessageID, bot)
+		case "create":
+			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.CreateTeam(update.Message, dbConfig), update.Message.MessageID, bot)
+			continue
+		case "listusers":
+			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowUsers(update.Message, false, dbConfig), update.Message.MessageID, bot)
+			continue
+		case "list":
+			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowUsers(update.Message, true, dbConfig), update.Message.MessageID, bot)
+			continue
+		case "join":
+			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.JoinTeam(update.Message, dbConfig), update.Message.MessageID, bot)
+			continue
+		case "leave":
+			_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBDeleteUser(update.Message.From.ID), update.Message.MessageID, bot)
+			continue
+		case "invite":
+			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetInvite(update.Message, dbConfig), update.Message.MessageID, bot)
+			continue
 		default:
 			if strings.HasPrefix(update.Message.Text, "/") {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, "I don't know what you want. But you can use /help", update.Message.MessageID, bot)

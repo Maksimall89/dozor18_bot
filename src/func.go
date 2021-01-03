@@ -161,7 +161,7 @@ func ShowUsers(message *tgbotapi.Message, isMyTeam bool, dbConfig Config) string
 	return str
 }
 func GetTime() string {
-	return fmt.Sprintf("%d-%02d-%02d-%02d-%02d-%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+	return fmt.Sprintf("%d-%02d-%02d_%02d-%02d-%02d-%d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second(), time.Now().Nanosecond())
 }
 func GetMD5Hash(text string) string {
 	hasher := md5.New()
@@ -186,18 +186,18 @@ func GetListHelps(from *tgbotapi.User, adminID int) (commandList string) {
 		{false, "/codes - коды;\n"},
 		{false, "/generate, /gen - сгенерировать коды;\n"},
 		{false, "/text - текст приквела;\n"},
+		{false, "/create - создать команду;\n"},
+		{false, "/join - вступить в команду;\n"},
+		{false, "/list - список участников команды;\n"},
+		{false, "/listusers - список участников в командах;\n"},
+		{false, "/leave - выйти из команды;\n"},
+		{false, "/invite - получить ссылку приглашение в команду;\n"},
 		{true, "/show - показать все коды;\n"},
 		{true, "/reset - удалить все из БД и создать новые;\n"},
 		{true, "/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n"},
 		{true, "/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n"},
 		{true, "/delete - удалить указанный код;\n"},
-		{true, "/create - создать команду;\n"},
-		{true, "/join - вступить в команду;\n"},
-		{true, "/list - список участников команды;\n"},
-		{true, "/listusers - список участников в командах;\n"},
 		{true, "/listteams - список всех команд;\n"},
-		{true, "/leave - выйти из команды;\n"},
-		{true, "/invite - получить ссылку приглашение в команду;\n"},
 		{true, "/resetteams - удалить все команды;\n"},
 	}
 
