@@ -91,14 +91,14 @@ func ShowCodesMy(message *tgbotapi.Message, dbConfig Config) string {
 		for _, value := range strArr {
 			for _, base := range dataAll {
 				if strings.ToLower(strings.TrimSpace(value)) == base.Code {
-					str += fmt.Sprintf("%d. Код Опасности: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b>\n", valueData.ID, valueData.Danger, valueData.Sector)
+					str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s)\n", valueData.ID, valueData.Danger, valueData.Sector, valueData.Code)
 					isFound = true
 					break
 				}
 			}
 		}
 		if !isFound {
-			str += fmt.Sprintf("%d. Код Опасности: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят\n", valueData.ID, valueData.Danger, valueData.Sector)
+			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят\n", valueData.ID, valueData.Danger, valueData.Sector)
 		}
 	}
 	return str
