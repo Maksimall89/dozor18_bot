@@ -113,7 +113,7 @@ func CreateTeam(message *tgbotapi.Message, dbConfig Config) string {
 		return "&#10071;Слишком короткое название команды, надо минимум 3 символа."
 	}
 
-	if !strings.ContainsAny(strings.ToLower(message.CommandArguments()), "\"`~-\\=:;/,.'*+@#№%$%^&(){}[]|") {
+	if strings.ContainsAny(strings.ToLower(message.CommandArguments()), "\"`~-\\=:;/,.'*+@#№%$%^&(){}[]|") {
 		return "&#10071;Недопустимые символы в названии команды. Можно использовать лишь буквы и цифры русского и английского алфавита."
 	}
 
