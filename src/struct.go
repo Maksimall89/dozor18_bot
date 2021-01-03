@@ -30,7 +30,7 @@ func (conf *Config) Init() {
 	if value, exists := os.LookupEnv("OwnName"); exists {
 		conf.OwnName = value
 	}
-	if value, exists := os.LookupEnv("UserID"); exists {
+	if value, exists := os.LookupEnv("OwnID"); exists {
 		conf.OwnID, _ = strconv.Atoi(value)
 	}
 	if value, exists := os.LookupEnv("ListenPath"); exists {
