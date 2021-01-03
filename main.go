@@ -49,7 +49,7 @@ func main() {
 	}
 
 	// get info from DB
-	dbConfig := src.DBconfig{}
+	dbConfig := src.Config{}
 	dbConfig.Init()
 
 	var str string
@@ -59,7 +59,7 @@ func main() {
 			continue
 		}
 
-		if update.Message.From.UserName == configuration.OwnName {
+		if update.Message.From.ID == configuration.OwnID {
 			switch strings.ToLower(update.Message.Command()) {
 			case "reset", "restart":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBResetAllCodes(), 0, bot)
@@ -105,10 +105,10 @@ func main() {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.JoinTeam(update.Message, dbConfig), update.Message.MessageID, bot)
 				continue
 			case "leave":
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBDeleteUser(src.GetNickName(update.Message.From)), update.Message.MessageID, bot)
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBDeleteUser(update.Message.From.ID), update.Message.MessageID, bot)
 				continue
 			case "invite":
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetInvite(src.GetNickName(update.Message.From), dbConfig), update.Message.MessageID, bot)
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetInvite(update.Message, dbConfig), update.Message.MessageID, bot)
 				continue
 			}
 		}
@@ -132,7 +132,7 @@ func main() {
 		case "text":
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">dozor18.ru</a>.`, update.Message.MessageID, bot)
 		case "help", "start":
-			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetListHelps(update.Message.From, configuration.OwnName), update.Message.MessageID, bot)
+			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetListHelps(update.Message.From, configuration.OwnID), update.Message.MessageID, bot)
 		default:
 			if strings.HasPrefix(update.Message.Text, "/") {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, "I don't know what you want. But you can use /help", update.Message.MessageID, bot)
