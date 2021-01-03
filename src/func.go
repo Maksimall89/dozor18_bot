@@ -66,7 +66,7 @@ func ShowCodesAll(dbConfig DBconfig) string {
 	// ID, Time, NickName, Code, Danger, Sector
 	str += fmt.Sprintf("\nВсего кодов введено: %d\n&#9745;Коды Юзеров:\n", len(dataAllUsers))
 	for _, value := range dataAllUsers {
-		str += fmt.Sprintf("%d. %s; <b>Ник:</b> %s; <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s;\n", value.ID, value.Time, value.NickName, value.Code, value.Danger, value.Sector)
+		str += fmt.Sprintf("%d. %s; <b>Ник:</b> %s; <b>Команда:</b> %s; <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s;\n", value.ID, value.Time, value.NickName, value.Team, value.Code, value.Danger, value.Sector)
 	}
 
 	return str
@@ -192,6 +192,7 @@ func GetListHelps(from *tgbotapi.User, adminNickname string) (commandList string
 		{true, "/listusers - список участников команд;\n"},
 		{true, "/listteams - список всех команд;\n"},
 		{true, "/leave - выйти из команды;\n"},
+		{true, "/invite - получить ссылку приглашение в команду;\n"},
 		{true, "/resetteams - удалить все команды;\n"},
 	}
 
