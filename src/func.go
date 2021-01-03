@@ -122,18 +122,16 @@ func CreateTeam(message *tgbotapi.Message, dbConfig Config) string {
 	team.UserID, team.NickName = GetNickName(message.From)
 	team.Team = strings.ToLower(strings.TrimSpace(message.CommandArguments()))
 	team.Hash = GetMD5Hash(team.Team)
-	teams := dbConfig.DBSelectTeam("")
-	for _, value := range teams {
-		if value.Team == team.Team {
-			return "&#10071; Такая команда уже есть."
-		}
-	}
+
 	return dbConfig.DBInsertTeam(&team)
 }
 func JoinTeam(message *tgbotapi.Message, dbConfig Config) string {
 	strArr := strings.Split(message.CommandArguments(), ",")
 	if len(strArr) < 2 {
 		return "&#10071;Нет всех аргументов: /join team, secret key"
+	}
+	if strings.ContainsAny(strings.ToLower(strArr[0]), "\"`~-\\=:;/,.'*+@#№%$%^&(){}[]|") {
+		return "&#10071;Недопустимые символы в названии команды. Можно использовать лишь буквы и цифры русского и английского алфавита."
 	}
 	for number, value := range strArr {
 		strArr[number] = strings.ToLower(strings.TrimSpace(value))
