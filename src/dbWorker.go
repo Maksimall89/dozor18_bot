@@ -352,5 +352,5 @@ func (confDataBase *Config) DBInsertTeam(teams *Teams) string {
 	user.UserID = teams.UserID
 	confDataBase.DBInsertUser(&user)
 
-	return fmt.Sprintf("&#9989;Команда <b>%s</b> создана, для вступления в неё введите: <code>/join %s %s </code>", teams.Team, teams.Team, teams.Hash)
+	return fmt.Sprintf("&#9989;Команда <b>%s</b> создана, для вступления в неё введите: <code>/join %s, %s </code>", teams.Team, teams.Team, teams.Hash)
 }
