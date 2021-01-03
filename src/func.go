@@ -10,13 +10,13 @@ import (
 	"time"
 )
 
-func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) {
+func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) {
 	dataRight := dbConfig.DBSelectCodesRight()
 	codes := Codes{}
 	str := ""
 
 	myTeam := ""
-	users := dbConfig.DBSelectUsers(fmt.Sprintf("WHERE NickName= '%s'", GetNickName(user.From)))
+	users := dbConfig.DBSelectUsers(fmt.Sprintf("WHERE NickName= '%s'", GetNickName(message.From)))
 	if len(users) > 0 {
 		myTeam = users[0].Team
 	}
@@ -25,11 +25,11 @@ func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) 
 	for _, valueData := range dataRight {
 		strArr := strings.Split(valueData.Code, "|")
 		for _, value := range strArr {
-			if strings.EqualFold(value, strings.TrimSpace(user.Text)) {
+			if strings.EqualFold(value, strings.TrimSpace(message.Text)) {
 				str = fmt.Sprintf("&#9989; Снят код <b>№%d</b> с КО %s из сектора %s", valueData.ID, valueData.Danger, valueData.Sector)
 				codes.Time = GetTime()
-				codes.NickName = GetNickName(user.From)
-				codes.Code = strings.ToLower(strings.TrimSpace(user.Text))
+				codes.NickName = GetNickName(message.From)
+				codes.Code = strings.ToLower(strings.TrimSpace(message.Text))
 				codes.Danger = valueData.Danger
 				codes.Sector = valueData.Sector
 				codes.Team = myTeam
@@ -38,7 +38,7 @@ func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) 
 			}
 		}
 	}
-	_ = SendMessageTelegram(user.Chat.ID, str, user.MessageID, bot)
+	_ = SendMessageTelegram(message.Chat.ID, str, message.MessageID, bot)
 }
 func GetInvite(nickName string, dbConfig DBconfig) string {
 	condition := fmt.Sprintf("WHERE NickName= '%s'", nickName)
@@ -52,7 +52,7 @@ func GetInvite(nickName string, dbConfig DBconfig) string {
 	if len(teams) < 1 {
 		return "&#10071;Вы состоите в удаленной команде."
 	}
-	return fmt.Sprintf("Для вступления в команду <b>%s</b> введите: <code>/join %s %s </code>", teams[0].Team, teams[0].Team, teams[0].Hash)
+	return fmt.Sprintf("Для вступления в команду <b>%s</b> введите: <code>/join %s, %s </code>", teams[0].Team, teams[0].Team, teams[0].Hash)
 }
 func ShowCodesAll(dbConfig DBconfig) string {
 	dataAllRight := dbConfig.DBSelectCodesRight()
@@ -71,11 +71,11 @@ func ShowCodesAll(dbConfig DBconfig) string {
 
 	return str
 }
-func ShowCodesMy(user *tgbotapi.Message, dbConfig DBconfig) string {
+func ShowCodesMy(message *tgbotapi.Message, dbConfig DBconfig) string {
 	var isFound bool
-	condition := fmt.Sprintf("WHERE NickName = '%s'", GetNickName(user.From))
-	str := fmt.Sprintf("Коды <b>%s</b>:\n", user.From)
-	users := dbConfig.DBSelectUsers(fmt.Sprintf("WHERE NickName= '%s'", GetNickName(user.From)))
+	condition := fmt.Sprintf("WHERE NickName = '%s'", GetNickName(message.From))
+	str := fmt.Sprintf("Коды <b>%s</b>:\n", message.From)
+	users := dbConfig.DBSelectUsers(fmt.Sprintf("WHERE NickName= '%s'", GetNickName(message.From)))
 	if len(users) > 0 {
 		condition = fmt.Sprintf("WHERE Team = '%s'", users[0].Team)
 		str = fmt.Sprintf("Коды команды <b>%s</b>:\n", users[0].Team)
@@ -111,7 +111,6 @@ func CreateTeam(message *tgbotapi.Message, dbConfig DBconfig) string {
 	team.NickName = GetNickName(message.From)
 	team.Team = strings.ToLower(strings.TrimSpace(message.CommandArguments()))
 	team.Hash = GetMD5Hash(team.Team)
-
 	teams := dbConfig.DBSelectTeam("")
 	for _, value := range teams {
 		if value.Team == team.Team {
@@ -120,8 +119,8 @@ func CreateTeam(message *tgbotapi.Message, dbConfig DBconfig) string {
 	}
 	return dbConfig.DBCreateTeam(&team)
 }
-func JoinTeam(addUser *tgbotapi.Message, dbConfig DBconfig) string {
-	strArr := strings.Split(addUser.CommandArguments(), ",")
+func JoinTeam(message *tgbotapi.Message, dbConfig DBconfig) string {
+	strArr := strings.Split(message.CommandArguments(), ",")
 	if len(strArr) < 2 {
 		return "&#10071;Нет всех аргументов: /join team, secret key"
 	}
@@ -133,22 +132,26 @@ func JoinTeam(addUser *tgbotapi.Message, dbConfig DBconfig) string {
 	if len(team) != 1 || strArr[1] != team[0].Hash {
 		return "&#10071;Неверный ключ или имя команды"
 	}
-	user.NickName = GetNickName(addUser.From)
+	user.NickName = GetNickName(message.From)
 	user.Time = GetTime()
 	user.Team = strArr[0]
 
 	return dbConfig.DBInsertUser(&user)
 }
-func ShowUsers(team *tgbotapi.Message, isAdmin bool, dbConfig DBconfig) string {
-	if len(team.CommandArguments()) < 3 && !isAdmin {
-		return "&#10071;Слишком короткое имя команды!"
+func ShowUsers(message *tgbotapi.Message, isMyTeam bool, dbConfig DBconfig) string {
+	var users []Users
+	var condition string
+	str := "Список всех участников в командах:\n"
+	if isMyTeam {
+		condition = fmt.Sprintf("WHERE NickName= '%s'", GetNickName(message.From))
+		users = dbConfig.DBSelectUsers(condition)
+		if len(users) < 1 {
+			return "&#10071;Вы не состоите ни в одной команде."
+		}
+		condition = fmt.Sprintf("WHERE Team = '%s'", users[0].Team)
+		str = fmt.Sprintf("Список всех участников команды <b>%s</b>:\n", users[0].Team)
 	}
-	condition := fmt.Sprintf("WHERE Team = '%s'", strings.ToLower(team.CommandArguments()))
-	str := fmt.Sprintf("Список всех участников команды <b>%s</b>:\n", team.CommandArguments())
-	if isAdmin {
-		condition = ""
-	}
-	users := dbConfig.DBSelectUsers(condition)
+	users = dbConfig.DBSelectUsers(condition)
 	for key, value := range users {
 		str += fmt.Sprintf("%d. <b>%s</b> %s\n", key, value.NickName, value.Team)
 	}
@@ -189,7 +192,7 @@ func GetListHelps(from *tgbotapi.User, adminNickname string) (commandList string
 		{true, "/create - создать команду;\n"},
 		{true, "/join - вступить в команду;\n"},
 		{true, "/list - список участников команды;\n"},
-		{true, "/listusers - список участников команд;\n"},
+		{true, "/listusers - список участников в командах;\n"},
 		{true, "/listteams - список всех команд;\n"},
 		{true, "/leave - выйти из команды;\n"},
 		{true, "/invite - получить ссылку приглашение в команду;\n"},
