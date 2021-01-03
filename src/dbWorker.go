@@ -224,7 +224,7 @@ func (confDataBase *Config) DBResetUser() string {
 		"NickName	varchar(100) UNIQUE NOT NULL," +
 		"UserID		INTEGER NOT NULL," +
 		"Time		varchar(40) NOT NULL," +
-		"Team		varchar(100) UNIQUE NOT NULL," +
+		"Team		varchar(100) NOT NULL," +
 		"Login		varchar(100)," +
 		"Password	varchar(100));")
 	if err != nil {
