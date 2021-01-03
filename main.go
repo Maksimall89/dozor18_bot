@@ -107,6 +107,9 @@ func main() {
 			case "leave":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBDeleteUser(src.GetNickName(update.Message.From)), update.Message.MessageID, bot)
 				continue
+			case "invite":
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetInvite(src.GetNickName(update.Message.From), dbConfig), update.Message.MessageID, bot)
+				continue
 			}
 		}
 

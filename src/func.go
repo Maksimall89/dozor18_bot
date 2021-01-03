@@ -40,6 +40,20 @@ func CheckCode(user *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig DBconfig) 
 	}
 	_ = SendMessageTelegram(user.Chat.ID, str, user.MessageID, bot)
 }
+func GetInvite(nickName string, dbConfig DBconfig) string {
+	condition := fmt.Sprintf("WHERE NickName= '%s'", nickName)
+	users := dbConfig.DBSelectUsers(condition)
+	if len(users) < 1 {
+		return "&#10071;Вы не состоите ни в одной команде."
+	}
+	myTeam := users[0].Team
+	condition = fmt.Sprintf("WHERE Team= '%s'", myTeam)
+	teams := dbConfig.DBSelectTeam(condition)
+	if len(teams) < 1 {
+		return "&#10071;Вы состоите в удаленной команде."
+	}
+	return fmt.Sprintf("Для вступления в команду <b>%s</b> введите: <code>/join %s %s </code>", teams[0].Team, teams[0].Team, teams[0].Hash)
+}
 func ShowCodesAll(dbConfig DBconfig) string {
 	dataAllRight := dbConfig.DBSelectCodesRight()
 	// ID, Time, NickName, Code, Danger, Sector
