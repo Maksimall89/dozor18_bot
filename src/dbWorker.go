@@ -242,7 +242,7 @@ func (confDataBase *Config) DBSelectUsers(condition string) []Users {
 	}
 	defer db.Close()
 
-	query := fmt.Sprintf("SELECT NickName, UserID Team FROM Users %s", condition)
+	query := fmt.Sprintf("SELECT NickName, UserID, Team FROM Users %s", condition)
 	rows, err := db.Query(query)
 	if err != nil {
 		log.Printf("Unable to SELECT Users: %v\n", err)
