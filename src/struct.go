@@ -19,27 +19,27 @@ type Config struct {
 	DriverNameDB     string
 }
 
-func (conf *Config) Init() {
+func (dbConfig *Config) Init() {
 	if value, exists := os.LookupEnv("DATABASE_URL"); exists {
-		conf.DBURL = value
+		dbConfig.DBURL = value
 	}
 	if value, exists := os.LookupEnv("DriverNameDB"); exists {
-		conf.DriverNameDB = value
+		dbConfig.DriverNameDB = value
 	}
 	if value, exists := os.LookupEnv("TelegramBotToken"); exists {
-		conf.TelegramBotToken = value
+		dbConfig.TelegramBotToken = value
 	}
 	if value, exists := os.LookupEnv("OwnName"); exists {
-		conf.OwnName = value
+		dbConfig.OwnName = value
 	}
 	if value, exists := os.LookupEnv("OwnID"); exists {
-		conf.OwnID, _ = strconv.Atoi(value)
+		dbConfig.OwnID, _ = strconv.Atoi(value)
 	}
 	if value, exists := os.LookupEnv("ListenPath"); exists {
-		conf.ListenPath = value
+		dbConfig.ListenPath = value
 	}
 	if value, exists := os.LookupEnv("PORT"); exists {
-		conf.Port = value
+		dbConfig.Port = value
 	}
 }
 

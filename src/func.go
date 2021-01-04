@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	WhereUserID = "WHERE UserID='%d'"
-	WhereTeam   = "WHERE Team='%s'"
+	whereUserID = "WHERE UserID='%d'"
+	whereTeam   = "WHERE Team='%s'"
 )
 
 func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig Config) {
@@ -22,7 +22,7 @@ func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig Config)
 
 	myTeam := ""
 	UserID, _ := GetNickName(message.From)
-	users := dbConfig.DBSelectUsers(fmt.Sprintf(WhereUserID, UserID))
+	users := dbConfig.DBSelectUsers(fmt.Sprintf(whereUserID, UserID))
 	if len(users) > 0 {
 		myTeam = users[0].Team
 	}
@@ -48,13 +48,13 @@ func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig Config)
 }
 func GetInvite(message *tgbotapi.Message, dbConfig Config) string {
 	UserID, _ := GetNickName(message.From)
-	condition := fmt.Sprintf(WhereUserID, UserID)
+	condition := fmt.Sprintf(whereUserID, UserID)
 	users := dbConfig.DBSelectUsers(condition)
 	if len(users) < 1 {
 		return "&#10071;Вы не состоите ни в одной команде."
 	}
 	myTeam := users[0].Team
-	condition = fmt.Sprintf(WhereTeam, myTeam)
+	condition = fmt.Sprintf(whereTeam, myTeam)
 	teams := dbConfig.DBSelectTeam(condition)
 	if len(teams) < 1 {
 		return "&#10071;Вы состоите в удаленной команде."
@@ -81,11 +81,11 @@ func ShowCodesAll(dbConfig Config) string {
 func ShowCodesMy(message *tgbotapi.Message, dbConfig Config) string {
 	var isFound bool
 	UserID, _ := GetNickName(message.From)
-	condition := fmt.Sprintf(WhereUserID, UserID)
+	condition := fmt.Sprintf(whereUserID, UserID)
 	str := fmt.Sprintf("Коды <b>%s</b>:\n", message.From)
 	users := dbConfig.DBSelectUsers(condition)
 	if len(users) > 0 {
-		condition = fmt.Sprintf(WhereTeam, users[0].Team)
+		condition = fmt.Sprintf(whereTeam, users[0].Team)
 		str = fmt.Sprintf("Коды команды <b>%s</b>:\n", users[0].Team)
 	}
 	dataAll := dbConfig.DBSelectCodesUser(condition)
@@ -110,9 +110,6 @@ func ShowCodesMy(message *tgbotapi.Message, dbConfig Config) string {
 	return str
 }
 func CreateTeam(message *tgbotapi.Message, dbConfig Config) string {
-	if len(message.CommandArguments()) < 3 {
-		return "&#10071;Слишком короткое название команды, надо минимум 3 символа."
-	}
 	err := CheckMessage(message.CommandArguments())
 	if err != nil {
 		return fmt.Sprintf("%s", err)
@@ -128,18 +125,18 @@ func CreateTeam(message *tgbotapi.Message, dbConfig Config) string {
 }
 func JoinTeam(message *tgbotapi.Message, dbConfig Config) string {
 	strArr := strings.Split(message.CommandArguments(), ",")
-	if len(strArr) < 2 {
+	if len(strArr) != 2 {
 		return "&#10071;Нет всех аргументов: /join team, secret key"
 	}
-	err := CheckMessage(strArr[0])
-	if err != nil {
-		return fmt.Sprintf("%s", err)
-	}
 	for number, value := range strArr {
+		err := CheckMessage(value)
+		if err != nil {
+			return fmt.Sprintf("%s", err)
+		}
 		strArr[number] = strings.ToLower(strings.TrimSpace(value))
 	}
 	user := Users{}
-	team := dbConfig.DBSelectTeam(fmt.Sprintf(WhereTeam, strArr[0]))
+	team := dbConfig.DBSelectTeam(fmt.Sprintf(whereTeam, strArr[0]))
 	if len(team) != 1 || strArr[1] != team[0].Hash {
 		return "&#10071;Неверный ключ или название команды"
 	}
@@ -155,12 +152,12 @@ func ShowUsers(message *tgbotapi.Message, isMyTeam bool, dbConfig Config) string
 	str := "Список всех участников в командах:\n"
 	UserID, _ := GetNickName(message.From)
 	if isMyTeam {
-		condition = fmt.Sprintf(WhereUserID, UserID)
+		condition = fmt.Sprintf(whereUserID, UserID)
 		users = dbConfig.DBSelectUsers(condition)
 		if len(users) < 1 {
 			return "&#10071;Вы не состоите ни в одной команде."
 		}
-		condition = fmt.Sprintf(WhereTeam, users[0].Team)
+		condition = fmt.Sprintf(whereTeam, users[0].Team)
 		str = fmt.Sprintf("Список всех участников команды <b>%s</b>:\n", users[0].Team)
 	}
 	users = dbConfig.DBSelectUsers(condition)
@@ -266,8 +263,14 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 	return nil
 }
 func CheckMessage(message string) error {
+	if len(message) > 100 {
+		return errors.New("&#10071;Сообщение длинее 100 символов")
+	}
+	if len(message) < 3 {
+		return errors.New("&#10071;Сообщение слишком короткое")
+	}
 	if strings.ContainsAny(strings.ToLower(message), "\"`~-\\=:;/,.'*+@#№%$%^&(){}[]|") {
-		return errors.New("&#10071;Недопустимые символы в сообщении. Можно использовать лишь буквы и цифры русского и английского алфавита.")
+		return errors.New("&#10071;Недопустимые символы в сообщении. Можно использовать лишь буквы и цифры русского и английского алфавита")
 	}
 	return nil
 }

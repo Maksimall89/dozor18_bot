@@ -10,8 +10,8 @@ import (
 
 const errConnectPattern = "Unable to connect to database: %v\n"
 
-func (confDataBase *Config) DBResetAllCodes() string {
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+func (dbConfig *Config) DBResetAllCodes() string {
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		return fmt.Sprintf(errConnectPattern, err)
 	}
@@ -61,8 +61,8 @@ func (confDataBase *Config) DBResetAllCodes() string {
 
 	return resultStr
 }
-func (confDataBase *Config) DBSelectCodesUser(condition string) []Codes {
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+func (dbConfig *Config) DBSelectCodesUser(condition string) []Codes {
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		log.Printf(errConnectPattern, err)
 	}
@@ -89,8 +89,8 @@ func (confDataBase *Config) DBSelectCodesUser(condition string) []Codes {
 
 	return data
 }
-func (confDataBase *Config) DBInsertCodesUsers(codes *Codes) {
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+func (dbConfig *Config) DBInsertCodesUsers(codes *Codes) {
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		log.Printf(errConnectPattern, err)
 	}
@@ -102,8 +102,8 @@ func (confDataBase *Config) DBInsertCodesUsers(codes *Codes) {
 		log.Println(err)
 	}
 }
-func (confDataBase *Config) DBSelectCodesRight() []Codes {
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+func (dbConfig *Config) DBSelectCodesRight() []Codes {
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		log.Printf(errConnectPattern, err)
 	}
@@ -128,13 +128,13 @@ func (confDataBase *Config) DBSelectCodesRight() []Codes {
 
 	return data
 }
-func (confDataBase *Config) DBInsertCodesRight(addData string) string {
+func (dbConfig *Config) DBInsertCodesRight(addData string) string {
 	strArr := strings.Split(addData, ",")
 	if len(strArr) < 3 {
 		return "&#10071;Нет всех аргументов: /add Code,Danger,Sector"
 	}
 
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		return fmt.Sprintf(errConnectPattern, err)
 	}
@@ -148,12 +148,12 @@ func (confDataBase *Config) DBInsertCodesRight(addData string) string {
 
 	return "&#10004;Данные <b>добавлены</b> в БД."
 }
-func (confDataBase *Config) DBDeleteCodesRight(deleteStr string) string {
+func (dbConfig *Config) DBDeleteCodesRight(deleteStr string) string {
 	if len(deleteStr) < 2 {
 		return "&#10071;Нет всех аргументов: /delete CodeOld"
 	}
 
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		return fmt.Sprintf(errConnectPattern, err)
 	}
@@ -166,13 +166,13 @@ func (confDataBase *Config) DBDeleteCodesRight(deleteStr string) string {
 
 	return "&#8252;Данные <b>удалены</b> в БД=" + deleteStr
 }
-func (confDataBase *Config) DBUpdateCodesRight(updateData string) string {
+func (dbConfig *Config) DBUpdateCodesRight(updateData string) string {
 	strArr := strings.Split(updateData, ",")
 	if len(strArr) < 4 {
 		return "&#10071;Нет всех аргументов: /update CodeNew,Danger,Sector,CodeOld"
 	}
 
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		return fmt.Sprintf(errConnectPattern, err)
 	}
@@ -187,8 +187,8 @@ func (confDataBase *Config) DBUpdateCodesRight(updateData string) string {
 	return "&#10071;Данные <b>обновлены</b> в БД."
 }
 
-func (confDataBase *Config) DBResetUser() string {
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+func (dbConfig *Config) DBResetUser() string {
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		return fmt.Sprintf(errConnectPattern, err)
 	}
@@ -235,8 +235,8 @@ func (confDataBase *Config) DBResetUser() string {
 
 	return resultStr
 }
-func (confDataBase *Config) DBSelectUsers(condition string) []Users {
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+func (dbConfig *Config) DBSelectUsers(condition string) []Users {
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		log.Printf(errConnectPattern, err)
 	}
@@ -262,13 +262,13 @@ func (confDataBase *Config) DBSelectUsers(condition string) []Users {
 
 	return data
 }
-func (confDataBase *Config) DBInsertUser(users *Users) string {
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+func (dbConfig *Config) DBInsertUser(users *Users) string {
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		return fmt.Sprintf(errConnectPattern, err)
 	}
 	defer db.Close()
-	confDataBase.DBDeleteUser(users.UserID)
+	dbConfig.DBDeleteUser(users.UserID)
 
 	_, err = db.Exec("INSERT INTO Users (NickName, UserID, Time, Team) VALUES ($1, $2, $3, $4)",
 		users.NickName, users.UserID, users.Time, users.Team)
@@ -279,8 +279,8 @@ func (confDataBase *Config) DBInsertUser(users *Users) string {
 
 	return fmt.Sprintf("&#9989;Игрок %s <b>добавлен</b> в команду %s.", users.NickName, users.Team)
 }
-func (confDataBase *Config) DBDeleteUser(UserID int) string {
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+func (dbConfig *Config) DBDeleteUser(UserID int) string {
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		return fmt.Sprintf(errConnectPattern, err)
 	}
@@ -301,8 +301,8 @@ func (confDataBase *Config) DBDeleteUser(UserID int) string {
 
 	return fmt.Sprintf("&#8252;Вы покинули команду <b>%s</b>.", user.Team)
 }
-func (confDataBase *Config) DBSelectTeam(condition string) []Teams {
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+func (dbConfig *Config) DBSelectTeam(condition string) []Teams {
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		log.Printf(errConnectPattern, err)
 	}
@@ -328,14 +328,14 @@ func (confDataBase *Config) DBSelectTeam(condition string) []Teams {
 
 	return data
 }
-func (confDataBase *Config) DBInsertTeam(teams *Teams) string {
-	db, err := sql.Open(confDataBase.DriverNameDB, confDataBase.DBURL)
+func (dbConfig *Config) DBInsertTeam(teams *Teams) string {
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		log.Printf(errConnectPattern, err)
 	}
 	defer db.Close()
 	// leave now team
-	confDataBase.DBDeleteUser(teams.UserID)
+	dbConfig.DBDeleteUser(teams.UserID)
 
 	// create team
 	_, err = db.Exec("INSERT INTO Teams (Time, Team,  Hash, NickName, UserID) VALUES ($1, $2, $3, $4, $5)",
@@ -350,7 +350,7 @@ func (confDataBase *Config) DBInsertTeam(teams *Teams) string {
 	user.Time = teams.Time
 	user.Team = teams.Team
 	user.UserID = teams.UserID
-	confDataBase.DBInsertUser(&user)
+	dbConfig.DBInsertUser(&user)
 
 	return fmt.Sprintf("&#9989;Команда <b>%s</b> создана, для вступления в неё введите: <code>/join %s, %s </code>", teams.Team, teams.Team, teams.Hash)
 }

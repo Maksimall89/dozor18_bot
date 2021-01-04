@@ -77,14 +77,19 @@ func TestCheckMessage(t *testing.T) {
 		output string
 	}
 
-	rightErr := ("&#10071;Недопустимые символы в сообщении. Можно использовать лишь буквы и цифры русского и английского алфавита.")
+	errSymbol := "&#10071;Недопустимые символы в сообщении. Можно использовать лишь буквы и цифры русского и английского алфавита"
+	errMinLen := "&#10071;Сообщение слишком короткое"
+	errMaxLen := "&#10071;Сообщение длинее 100 символов"
 	var tests = []testPair{
-		{"dfg=dfg", rightErr},
-		{"5*5=10", rightErr},
+		{"dfg=dfg", errSymbol},
+		{"5*5=10", errSymbol},
+		{"a", errMinLen},
+		{"bb", errMinLen},
+		{"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", errMaxLen},
 	}
 	for _, pair := range tests {
 		result := CheckMessage(pair.input)
-		assert.EqualErrorf(t, result, rightErr, errorExpect, pair.input, pair.output, result)
+		assert.EqualErrorf(t, result, pair.output, errorExpect, pair.input, pair.output, result)
 	}
 
 	tests = []testPair{
