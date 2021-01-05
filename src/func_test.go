@@ -35,8 +35,9 @@ func TestGetMD5Hash(t *testing.T) {
 	t.Parallel()
 
 	input := "test"
-	output := "098f6bcd4621d373ca"
-	result := GetMD5Hash(input)
+	key := "mykey"
+	output := "8748ca685100474efb"
+	result := GetMD5Hash(input, key)
 	if result != output {
 		t.Errorf(errorExpect, input, output, result)
 	}
