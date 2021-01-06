@@ -52,7 +52,7 @@ func TestGetListHelps(t *testing.T) {
 	}
 
 	userHelps := "/help - информация по всем доступным командам;\n/codes - коды;\n/generate, /gen - сгенерировать коды;\n/text - текст приквела;\n/create - создать команду;\n/join - вступить в команду;\n/list - список участников команды;\n/listusers - список участников в командах;\n/leave - выйти из команды;\n/invite - получить ссылку приглашение в команду;\n"
-	adminHelps := userHelps + "/show - показать все коды;\n/reset - удалить все из БД и создать новые;\n/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n/delete - удалить указанный код;\n/listteams - список всех команд;\n/resetteams - удалить все команды;\n"
+	adminHelps := userHelps + "/show - показать все коды;\n/reset - удалить все из БД и создать новые;\n/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n/delete - удалить указанный код;\n/listteams - список всех команд;\n/resetteams - удалить все команды;\n/createdb - создать таблицы в БД;\n"
 
 	var tests = []testPair{
 		{&tgbotapi.User{ID: 12, FirstName: "Max", LastName: "Test", LanguageCode: "code1"}, 13, userHelps},

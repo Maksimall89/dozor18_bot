@@ -62,8 +62,7 @@ func main() {
 		if update.Message.From.ID == configuration.OwnID {
 			switch strings.ToLower(update.Message.Command()) {
 			case "reset", "restart":
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.CreateTable("CodesRight", dbConfig), 0, bot)
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.CreateTable("CodesUser", dbConfig), 0, bot)
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBTruncTables("codes"), 0, bot)
 				continue
 			case "show":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowCodesAll(dbConfig), 0, bot)
@@ -83,8 +82,7 @@ func main() {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBDeleteCodesRight(update.Message.CommandArguments()), update.Message.MessageID, bot)
 				continue
 			case "resetteams":
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.CreateTable("Teams", dbConfig), 0, bot)
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.CreateTable("Users", dbConfig), 0, bot)
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBTruncTables("teams"), 0, bot)
 				continue
 			case "listteams":
 				str = "Список всех команд:\n"
@@ -93,6 +91,9 @@ func main() {
 					str += fmt.Sprintf("%d. <b>%s</b>, %s, <code>%s</code>, %s\n", value.ID, value.Team, value.NickName, value.Hash, value.Time)
 				}
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
+				continue
+			case "createdb":
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBCreateTables(), 0, bot)
 				continue
 			}
 		}

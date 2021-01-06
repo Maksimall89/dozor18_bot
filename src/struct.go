@@ -72,8 +72,3 @@ type Users struct {
 	Login    string
 	Password string
 }
-
-type Tables struct {
-	name string
-	ddl  string
-}
