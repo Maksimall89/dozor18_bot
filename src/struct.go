@@ -1,47 +1,74 @@
 package src
 
-import "os"
+import (
+	"os"
+	"strconv"
+)
 
-var NameFileWords = "./words.txt"
+var (
+	NameFileWords = "./words.txt"
+)
 
 type Config struct {
 	TelegramBotToken string
 	OwnName          string
+	OwnID            int
 	ListenPath       string
 	Port             string
+	DBURL            string
+	DriverNameDB     string
 }
 
-func (conf *Config) Init() {
-	if value, exists := os.LookupEnv("TelegramBotToken"); exists {
-		conf.TelegramBotToken = value
-	}
-	if value, exists := os.LookupEnv("OwnName"); exists {
-		conf.OwnName = value
-	}
-	if value, exists := os.LookupEnv("ListenPath"); exists {
-		conf.ListenPath = value
-	}
-	if value, exists := os.LookupEnv("PORT"); exists {
-		conf.Port = value
-	}
-}
-
-type DataBase struct {
-	Number       int
-	Time         string
-	NickName     string
-	Code         string
-	Danger       string
-	Sector       string
-	DBURL        string
-	DriverNameDB string
-}
-
-func (confDataBase *DataBase) Init() {
+func (dbConfig *Config) Init() {
 	if value, exists := os.LookupEnv("DATABASE_URL"); exists {
-		confDataBase.DBURL = value
+		dbConfig.DBURL = value
 	}
 	if value, exists := os.LookupEnv("DriverNameDB"); exists {
-		confDataBase.DriverNameDB = value
+		dbConfig.DriverNameDB = value
 	}
+	if value, exists := os.LookupEnv("TelegramBotToken"); exists {
+		dbConfig.TelegramBotToken = value
+	}
+	if value, exists := os.LookupEnv("OwnName"); exists {
+		dbConfig.OwnName = value
+	}
+	if value, exists := os.LookupEnv("OwnID"); exists {
+		dbConfig.OwnID, _ = strconv.Atoi(value)
+	}
+	if value, exists := os.LookupEnv("ListenPath"); exists {
+		dbConfig.ListenPath = value
+	}
+	if value, exists := os.LookupEnv("PORT"); exists {
+		dbConfig.Port = value
+	}
+}
+
+type Codes struct {
+	ID       int
+	Time     string
+	NickName string
+	UserID   int
+	Code     string
+	Danger   string
+	Team     string
+	Sector   string
+}
+
+type Teams struct {
+	ID       int
+	Time     string
+	NickName string
+	UserID   int
+	Team     string
+	Hash     string
+}
+
+type Users struct {
+	ID       int
+	Time     string
+	NickName string
+	UserID   int
+	Team     string
+	Login    string
+	Password string
 }
