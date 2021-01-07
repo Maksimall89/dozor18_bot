@@ -193,7 +193,7 @@ func GetListHelps(from *tgbotapi.User, adminID int) (commandList string) {
 		{false, "/codes - коды;\n"},
 		{false, "/generate, /gen - сгенерировать коды;\n"},
 		{false, "/text - текст приквела;\n"},
-		{false, "/create - создать команду;\n"},
+		{false, "/create имя команды - создать команду;\n"},
 		{false, "/join - вступить в команду;\n"},
 		{false, "/list - список участников команды;\n"},
 		{false, "/listusers - список участников в командах;\n"},

@@ -40,7 +40,7 @@ func CodeGen(prefix string, postfix string, maxCount int, pathFileWord string) s
 
 	var str string
 	var code, buff, codePostfix, count int
-
+	result := fmt.Sprintf("&#9989;Готовые коды (%d штук).\nКОД\tКО\tСектор\n\n", maxCount)
 	arrCode := make(map[string]int)
 
 	// read codes from file
@@ -74,14 +74,9 @@ func CodeGen(prefix string, postfix string, maxCount int, pathFileWord string) s
 		// add new code
 		if _, ok := arrCode[str]; !ok {
 			arrCode[str] = count
+			result += str
 			count++
 		}
 	}
-
-	str = fmt.Sprintf("&#9989;Готовые коды (%d штук).\nКОД\tКО\tСектор\n\n", maxCount)
-	for key := range arrCode {
-		str += key
-	}
-
-	return str
+	return result
 }
