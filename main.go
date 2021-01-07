@@ -100,6 +100,7 @@ func main() {
 			number, err := strconv.Atoi(strArr[0])
 			if err != nil {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, "&#10071;Не по формату:\n<code>/generate 10</code>\n<code>/generate 10,1D,R</code>", update.Message.MessageID, bot)
+				continue
 			}
 			switch len(strArr) {
 			case 1:
