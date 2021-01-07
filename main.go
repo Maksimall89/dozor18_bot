@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/Maksimall89/dozor18_bot/src"
-	"gopkg.in/telegram-bot-api.v4"
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 	"net/http"
 	"strconv"

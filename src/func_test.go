@@ -1,9 +1,9 @@
 package src
 
 import (
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 	_ "github.com/stretchr/testify"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/telegram-bot-api.v4"
 	"testing"
 )
 
