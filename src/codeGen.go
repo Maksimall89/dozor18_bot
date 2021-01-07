@@ -29,7 +29,7 @@ func readLines(path string) ([]string, error) {
 func CodeGen(prefix string, postfix string, maxCount int, pathFileWord string) string {
 
 	if maxCount == 0 {
-		return "Слишком мало кодов: 0 кодов. \n<code>/generate 10</code>\n<code>/generate 10,1D,R</code>"
+		return "&#10071;Слишком мало кодов: 0 кодов. \n<code>/generate 10</code>\n<code>/generate 10,1D,R</code>"
 	}
 
 	if maxCount > 124 {
