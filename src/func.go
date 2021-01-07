@@ -19,7 +19,7 @@ func ShowTeams(isAllInfo bool, dbConfig Config) string {
 	str := "&#9745;Список всех команд:\n"
 	teams := dbConfig.DBSelectTeam("")
 	for number, value := range teams {
-		str += fmt.Sprintf("\n%d. Капитан: <b>%s</b>; Команда: <b>%s</b>", number+1, value.Team, value.NickName)
+		str += fmt.Sprintf("\n%d. Команда: <b>%s</b>; Капитан: <b>%s</b>", number+1, value.Team, value.NickName)
 		if isAllInfo {
 			str += fmt.Sprintf(" <code>%s</code>, %s", value.Hash, value.Time)
 		}
