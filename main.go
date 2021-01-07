@@ -85,7 +85,7 @@ func main() {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBTruncTables("teams"), 0, bot)
 				continue
 			case "listteams":
-				str = "Список всех команд:\n"
+				str = "&#9745;Список всех команд:\n"
 				teams := dbConfig.DBSelectTeam("")
 				for _, value := range teams {
 					str += fmt.Sprintf("%d. <b>%s</b>, %s, <code>%s</code>, %s\n", value.ID, value.Team, value.NickName, value.Hash, value.Time)
@@ -105,7 +105,7 @@ func main() {
 			strArr := strings.Split(update.Message.CommandArguments(), ",")
 			number, err := strconv.Atoi(strArr[0])
 			if err != nil {
-				str = "Не по формату:\n<code>/generate 10</code>\n<code>/generate 10,1D,R</code>"
+				str = "&#10071;Не по формату:\n<code>/generate 10</code>\n<code>/generate 10,1D,R</code>"
 			}
 			switch len(strArr) {
 			case 1:
@@ -138,7 +138,7 @@ func main() {
 			continue
 		default:
 			if strings.HasPrefix(update.Message.Text, "/") {
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, "I don't know what you want. But you can use /help", update.Message.MessageID, bot)
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, "&#9940;I don't know what you want. But you can use /help", update.Message.MessageID, bot)
 				break
 			}
 			src.CheckCode(update.Message, bot, dbConfig)
