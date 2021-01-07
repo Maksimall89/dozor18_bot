@@ -32,10 +32,10 @@ func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig Config)
 		strArr := strings.Split(valueRight.Code, "|")
 		for _, value := range strArr {
 			if value == code {
-				str = fmt.Sprintf("&#9989; Снят код <b>№%d</b> с КО %s из сектора %s", valueRight.ID, valueRight.Danger, valueRight.Sector)
+				str = fmt.Sprintf("&#9989;Снят код <b>№%d</b> с КО <b>%s</b> из сектора <b>%s</b>", valueRight.ID, valueRight.Danger, valueRight.Sector)
 				codes.UserID = UserID
 				codes.NickName = NickName
-				codes.Code = code
+				codes.Code = valueRight.Code
 				codes.Team = myTeam
 				dbConfig.DBInsertCodesUsers(&codes)
 				break
@@ -95,14 +95,14 @@ func ShowCodesMy(message *tgbotapi.Message, dbConfig Config) string {
 		for _, valueUser := range strArr {
 			for _, base := range dataAll {
 				if strings.ToLower(strings.TrimSpace(valueUser)) == base.Code {
-					str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s)\n", number, valueRight.Danger, valueRight.Sector, valueRight.Code)
+					str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s)\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.Code)
 					isFound = true
 					break
 				}
 			}
 		}
 		if !isFound {
-			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят\n", number, valueRight.Danger, valueRight.Sector)
+			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят\n", number+1, valueRight.Danger, valueRight.Sector)
 		}
 	}
 	return str
