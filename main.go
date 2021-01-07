@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/Maksimall89/dozor18_bot/src"
-	"gopkg.in/telegram-bot-api.v4"
+	"github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"net/http"
 	"strconv"
@@ -15,7 +15,6 @@ func MainHandler(resp http.ResponseWriter, _ *http.Request) {
 }
 
 func main() {
-
 	// init configuration
 	configuration := src.Config{}
 	configuration.Init()
@@ -63,8 +62,10 @@ func main() {
 			switch strings.ToLower(update.Message.Command()) {
 			case "reset", "restart":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBTruncTables("codes"), 0, bot)
+				continue
 			case "show":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowCodesAll(dbConfig), 0, bot)
+				continue
 			case "add":
 				arrCodes := strings.Split(update.Message.Text, "\n")
 				for _, code := range arrCodes {
@@ -72,16 +73,22 @@ func main() {
 					str = dbConfig.DBInsertCodesRight(code)
 					_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
 				}
+				continue
 			case "update":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBUpdateCodesRight(update.Message.CommandArguments()), update.Message.MessageID, bot)
+				continue
 			case "delete":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBDeleteCodesRight(update.Message.CommandArguments()), update.Message.MessageID, bot)
+				continue
 			case "resetteams":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBTruncTables("teams"), 0, bot)
+				continue
 			case "listteams":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowTeams(true, dbConfig), update.Message.MessageID, bot)
+				continue
 			case "createdb":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBCreateTables(), 0, bot)
+				continue
 			}
 		}
 
@@ -92,7 +99,8 @@ func main() {
 			strArr := strings.Split(update.Message.CommandArguments(), ",")
 			number, err := strconv.Atoi(strArr[0])
 			if err != nil {
-				str = "&#10071;Не по формату:\n<code>/generate 10</code>\n<code>/generate 10,1D,R</code>"
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, "&#10071;Не по формату:\n<code>/generate 10</code>\n<code>/generate 10,1D,R</code>", update.Message.MessageID, bot)
+				continue
 			}
 			switch len(strArr) {
 			case 1:
