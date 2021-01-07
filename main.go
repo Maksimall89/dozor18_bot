@@ -55,7 +55,7 @@ func main() {
 	var str string
 	// read from channel
 	for update := range updates {
-		if update.Message == nil {
+		if update.Message == nil || update.Message.From.IsBot {
 			continue
 		}
 
@@ -83,7 +83,6 @@ func main() {
 			case "createdb":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBCreateTables(), 0, bot)
 			}
-			continue
 		}
 
 		switch strings.ToLower(update.Message.Command()) {
