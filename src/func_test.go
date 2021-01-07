@@ -1,7 +1,7 @@
 package src
 
 import (
-	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	_ "github.com/stretchr/testify"
 	"github.com/stretchr/testify/assert"
 	"testing"
