@@ -86,19 +86,16 @@ func ShowCodesMy(message *tgbotapi.Message, dbConfig Config) string {
 		condition = fmt.Sprintf(whereTeam, users[0].Team)
 		str = fmt.Sprintf("&#9745;Коды команды <b>%s</b>:\n", users[0].Team)
 	}
-	dataAll := dbConfig.DBSelectCodesUser(condition)
+	dataUser := dbConfig.DBSelectCodesUser(condition)
 	dataRight := dbConfig.DBSelectCodesRight()
 
 	for number, valueRight := range dataRight {
-		strArr := strings.Split(valueRight.Code, "|")
 		isFound = false
-		for _, valueUser := range strArr {
-			for _, base := range dataAll {
-				if strings.ToLower(strings.TrimSpace(valueUser)) == base.Code {
-					str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s)\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.Code)
-					isFound = true
-					break
-				}
+		for _, valueUser := range dataUser {
+			if strings.ToLower(strings.TrimSpace(valueUser.Code)) == valueRight.Code {
+				str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s)\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.Code)
+				isFound = true
+				break
 			}
 		}
 		if !isFound {
