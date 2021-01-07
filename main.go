@@ -85,12 +85,7 @@ func main() {
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBTruncTables("teams"), 0, bot)
 				continue
 			case "listteams":
-				str = "&#9745;Список всех команд:\n"
-				teams := dbConfig.DBSelectTeam("")
-				for _, value := range teams {
-					str += fmt.Sprintf("%d. <b>%s</b>, %s, <code>%s</code>, %s\n", value.ID, value.Team, value.NickName, value.Hash, value.Time)
-				}
-				_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowTeams(true, dbConfig), update.Message.MessageID, bot)
 				continue
 			case "createdb":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBCreateTables(), 0, bot)
@@ -135,6 +130,9 @@ func main() {
 			continue
 		case "invite":
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetInvite(update.Message, dbConfig), update.Message.MessageID, bot)
+			continue
+		case "teams":
+			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowTeams(false, dbConfig), update.Message.MessageID, bot)
 			continue
 		default:
 			if strings.HasPrefix(update.Message.Text, "/") {

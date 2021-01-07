@@ -15,6 +15,17 @@ const (
 	whereTeam   = "WHERE Team='%s'"
 )
 
+func ShowTeams(isAllInfo bool, dbConfig Config) string {
+	str := "&#9745;Список всех команд:\n"
+	teams := dbConfig.DBSelectTeam("")
+	for number, value := range teams {
+		str += fmt.Sprintf("\n%d. Капитан: <b>%s</b>; Команда: <b>%s</b>", number+1, value.Team, value.NickName)
+		if isAllInfo {
+			str += fmt.Sprintf(" <code>%s</code>, %s", value.Hash, value.Time)
+		}
+	}
+	return str
+}
 func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig Config) {
 	var codes Codes
 	var myTeam string
@@ -63,15 +74,15 @@ func ShowCodesAll(dbConfig Config) string {
 	dataAllRight := dbConfig.DBSelectCodesRight()
 	// ID, Time, NickName, Code, Danger, Sector
 	str := fmt.Sprintf("Всего кодов в движке: <b>%d</b>\n&#9989;Коды верные:\n", len(dataAllRight))
-	for _, value := range dataAllRight {
-		str += fmt.Sprintf("%d. <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s;\n", value.ID, value.Code, value.Danger, value.Sector)
+	for number, value := range dataAllRight {
+		str += fmt.Sprintf("%d. <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s;\n", number+1, value.Code, value.Danger, value.Sector)
 	}
 
 	dataAllUsers := dbConfig.DBSelectCodesUser("")
 	// ID, Time, NickName, Code, Danger, Sector
 	str += fmt.Sprintf("\nВсего кодов введено: <b>%d</b>\n&#9745;Коды Юзеров:\n", len(dataAllUsers))
-	for _, value := range dataAllUsers {
-		str += fmt.Sprintf("%d. %s; <b>Ник:</b> %s; <b>Команда:</b> %s; <b>Код:</b> %s;\n", value.ID, value.Time, value.NickName, value.Team, value.Code)
+	for number, value := range dataAllUsers {
+		str += fmt.Sprintf("%d. %s; <b>Ник:</b> %s; <b>Команда:</b> %s; <b>Код:</b> %s;\n", number+1, value.Time, value.NickName, value.Team, value.Code)
 	}
 
 	return str
@@ -188,6 +199,7 @@ func GetListHelps(from *tgbotapi.User, adminID int) (commandList string) {
 		{false, "/listusers - список участников в командах;\n"},
 		{false, "/leave - выйти из команды;\n"},
 		{false, "/invite - получить ссылку приглашение в команду;\n"},
+		{false, "/teams - список всех команд;\n"},
 		{true, "===========================================\n"},
 		{true, "/show - показать все коды;\n"},
 		{true, "/reset - удалить все из БД и создать новые;\n"},
