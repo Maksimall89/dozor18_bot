@@ -39,7 +39,7 @@ func (dbConfig *Config) DBCreateTables() string {
 			Time		timestamp NOT NULL,
 			NickName	varchar(100) NOT NULL,
 			UserID		integer NOT NULL,
-			Code		varchar(300) REFERENCES CodesRight (Code) ON DELETE CASCADE,
+			Code		varchar(300) REFERENCES CodesRight (Code) ON DELETE CASCADE ON UPDATE CASCADE,
 			Team		varchar(100) REFERENCES Teams (Team) ON DELETE SET NULL);
 		CREATE INDEX ON CodesUser(NickName text_pattern_ops);
 	

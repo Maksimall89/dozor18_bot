@@ -200,14 +200,13 @@ func GetListHelps(from *tgbotapi.User, adminID int) (commandList string) {
 		{false, "/leave - выйти из команды;\n"},
 		{false, "/invite - получить ссылку приглашение в команду;\n"},
 		{false, "/teams - список всех команд;\n"},
-		{true, "===========================================\n"},
+		{true, "<b>===========================================</b>\n"},
 		{true, "/show - показать все коды;\n"},
-		{true, "/reset - удалить все из БД и создать новые;\n"},
+		{true, "/reset - удалить данные из таблицы teams или codes;\n"},
 		{true, "/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n"},
 		{true, "/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n"},
 		{true, "/delete - удалить указанный код;\n"},
 		{true, "/listteams - список всех команд;\n"},
-		{true, "/resetteams - удалить все команды;\n"},
 		{true, "/createdb - создать таблицы в БД;\n"},
 	}
 

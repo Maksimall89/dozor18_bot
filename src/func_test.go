@@ -63,14 +63,13 @@ func TestGetListHelps(t *testing.T) {
 		"/invite - получить ссылку приглашение в команду;\n" +
 		"/teams - список всех команд;\n"
 	adminHelps := userHelps +
-		"===========================================\n" +
+		"<b>===========================================</b>\n" +
 		"/show - показать все коды;\n" +
-		"/reset - удалить все из БД и создать новые;\n" +
+		"/reset - удалить данные из таблицы teams или codes;\n" +
 		"/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n" +
 		"/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n" +
 		"/delete - удалить указанный код;\n" +
 		"/listteams - список всех команд;\n" +
-		"/resetteams - удалить все команды;\n" +
 		"/createdb - создать таблицы в БД;\n"
 
 	var tests = []testPair{
