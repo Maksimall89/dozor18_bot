@@ -9,7 +9,6 @@ const NameFileWords = "./words.txt"
 
 type Config struct {
 	TelegramBotToken string
-	OwnName          string
 	OwnID            int
 	ListenPath       string
 	Port             string
@@ -26,9 +25,6 @@ func (dbConfig *Config) Init() {
 	}
 	if value, exists := os.LookupEnv("TelegramBotToken"); exists {
 		dbConfig.TelegramBotToken = value
-	}
-	if value, exists := os.LookupEnv("OwnName"); exists {
-		dbConfig.OwnName = value
 	}
 	if value, exists := os.LookupEnv("OwnID"); exists {
 		dbConfig.OwnID, _ = strconv.Atoi(value)
