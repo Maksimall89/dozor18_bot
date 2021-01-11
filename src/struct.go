@@ -5,9 +5,7 @@ import (
 	"strconv"
 )
 
-var (
-	NameFileWords = "./words.txt"
-)
+const NameFileWords = "./words.txt"
 
 type Config struct {
 	TelegramBotToken string
