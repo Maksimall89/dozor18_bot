@@ -39,11 +39,11 @@ func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig Config)
 	code := strings.ToLower(strings.TrimSpace(message.Text))
 	str := "&#10060; Код неверный."
 	dataRight := dbConfig.DBSelectCodesRight()
-	for _, valueRight := range dataRight {
+	for numberRight, valueRight := range dataRight {
 		strArr := strings.Split(valueRight.Code, "|")
 		for _, value := range strArr {
 			if value == code {
-				str = fmt.Sprintf("&#9989;Снят код <b>№%d</b> с КО <b>%s</b> из сектора <b>%s</b>", valueRight.ID, valueRight.Danger, valueRight.Sector)
+				str = fmt.Sprintf("&#9989;Снят код <b>№%d</b> с КО <b>%s</b> из сектора <b>%s</b>", numberRight, valueRight.Danger, valueRight.Sector)
 				codes.UserID = UserID
 				codes.NickName = NickName
 				codes.Code = valueRight.Code
@@ -170,6 +170,7 @@ func ShowUsers(message *tgbotapi.Message, isMyTeam bool, dbConfig Config) string
 	}
 	return str
 }
+
 func GetMD5Hash(text string, key string) string {
 	hash := md5.New()
 	_, _ = hash.Write([]byte(text + key))

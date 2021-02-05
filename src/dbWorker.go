@@ -161,7 +161,7 @@ func (dbConfig *Config) DBInsertCodesRight(addData string) string {
 	defer db.Close()
 
 	_, err = db.Exec("INSERT INTO CodesRight (Code, Danger, Sector) VALUES ($1, $2, $3)",
-		strings.TrimSpace(strArr[0]), strings.TrimSpace(strArr[1]), strings.TrimSpace(strArr[2]))
+		strings.ToLower(strings.TrimSpace(strArr[0])), strings.TrimSpace(strArr[1]), strings.TrimSpace(strArr[2]))
 	if err != nil {
 		return fmt.Sprintf("&#9940;Unable to INSERT INTO CodesRight: %v\n", err)
 	}
