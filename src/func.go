@@ -19,6 +19,9 @@ func ShowTeams(isAllInfo bool, dbConfig Config) string {
 	str := "&#9745;Список всех команд:\n"
 	teams := dbConfig.DBSelectTeam("")
 	for number, value := range teams {
+		if value.Team == "void" {
+			continue
+		}
 		str += fmt.Sprintf("\n%d. Команда: <b>%s</b>; Капитан: <b>%s</b>", number+1, value.Team, value.NickName)
 		if isAllInfo {
 			str += fmt.Sprintf(" <code>%s</code>, %s", value.Hash, value.Time)
@@ -34,6 +37,8 @@ func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig Config)
 	users := dbConfig.DBSelectUsers(fmt.Sprintf(whereUserID, UserID))
 	if len(users) > 0 {
 		myTeam = users[0].Team
+	} else {
+		myTeam = "void"
 	}
 
 	code := strings.ToLower(strings.TrimSpace(message.Text))
@@ -56,11 +61,15 @@ func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig Config)
 	_ = SendMessageTelegram(message.Chat.ID, str, message.MessageID, bot)
 }
 func GetInvite(message *tgbotapi.Message, dbConfig Config) string {
+	str := "&#10071;Вы не состоите ни в одной команде."
 	UserID, _ := GetNickName(message.From)
 	condition := fmt.Sprintf(whereUserID, UserID)
 	users := dbConfig.DBSelectUsers(condition)
 	if len(users) < 1 {
-		return "&#10071;Вы не состоите ни в одной команде."
+		return str
+	}
+	if users[0].Team == "void" {
+		return str
 	}
 	myTeam := users[0].Team
 	condition = fmt.Sprintf(whereTeam, myTeam)
@@ -94,8 +103,10 @@ func ShowCodesMy(message *tgbotapi.Message, dbConfig Config) string {
 	str := fmt.Sprintf("&#9745;Коды <b>%s</b>:\n", message.From)
 	users := dbConfig.DBSelectUsers(condition)
 	if len(users) > 0 {
-		condition = fmt.Sprintf(whereTeam, users[0].Team)
-		str = fmt.Sprintf("&#9745;Коды команды <b>%s</b>:\n", users[0].Team)
+		if users[0].Team != "void" {
+			condition = fmt.Sprintf(whereTeam, users[0].Team)
+			str = fmt.Sprintf("&#9745;Коды команды <b>%s</b>:\n", users[0].Team)
+		}
 	}
 	dataUser := dbConfig.DBSelectCodesUser(condition)
 	dataRight := dbConfig.DBSelectCodesRight()
