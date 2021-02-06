@@ -86,7 +86,7 @@ func (dbConfig *Config) DBSelectCodesUser(condition string) []Codes {
 	}
 	defer db.Close()
 
-	query := fmt.Sprintf("SELECT ID, Time, NickName, UserID, Code, Team FROM CodesUser %s", condition)
+	query := fmt.Sprintf("SELECT ID, Time, NickName, UserID, Code, Team FROM CodesUser %s ORDER BY ID", condition)
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -129,7 +129,7 @@ func (dbConfig *Config) DBSelectCodesRight() []Codes {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT ID, Code, Danger, Sector FROM CodesRight")
+	rows, err := db.Query("SELECT ID, Code, Danger, Sector FROM CodesRight ORDER BY ID")
 	if err != nil {
 		log.Printf("&#9940;Unable to SELECT CodesRight: %v\n", err)
 	}
