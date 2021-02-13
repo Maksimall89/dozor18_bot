@@ -56,9 +56,6 @@ func main() {
 	// read from channel
 	for update := range updates {
 		command = ""
-		if update.Message.From.IsBot {
-			continue
-		}
 
 		if update.Message == nil {
 			if update.CallbackQuery != nil {
@@ -70,6 +67,9 @@ func main() {
 				continue
 			}
 		} else {
+			if update.Message.From.IsBot {
+				continue
+			}
 			command = update.Message.Command()
 		}
 
