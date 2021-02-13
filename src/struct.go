@@ -66,3 +66,31 @@ type Users struct {
 	Login    string
 	Password string
 }
+
+type CommandStruct struct {
+	IsAdmin   bool
+	Describe  string
+	Command   string
+	LevelMenu string
+}
+
+var Commands = []CommandStruct{
+	{false, "информация по всем доступным командам", "help", "all"},
+	{false, "список кодов", "codes", "main"},
+	{false, "сгенерировать коды", "gen", ""},
+	{false, "текст приквела", "text", "main"},
+	{false, "создать команду", "create имя команды", ""},
+	{false, "вступить в команду", "join", ""},
+	{false, "список участников команды", "list", "team"},
+	{false, "список участников в командах", "listusers", "team"},
+	{false, "выйти из команды", "leave", "team"},
+	{false, "получить ссылку приглашение в команду", "invite", "team"},
+	{false, "список всех команд", "teams", "team"},
+	{true, "показать все коды", "show", "admin"},
+	{true, "удалить данные из таблицы teams или codes", "reset", ""},
+	{true, "добавить новые правильные коды в формате: Code,Danger,Sector", "add", ""},
+	{true, "обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld", "update", ""},
+	{true, "удалить указанный код", "delete", ""},
+	{true, "список всех команд", "listteams", "admin"},
+	{true, "создать таблицы в БД", "createdb", ""},
+}

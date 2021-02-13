@@ -59,7 +59,7 @@ func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig Config)
 			}
 		}
 	}
-	_ = SendMessageTelegram(message.Chat.ID, str, message.MessageID, bot)
+	_ = SendMessageTelegram(message.Chat.ID, str, message.MessageID, bot, "main")
 }
 func GetInvite(message *tgbotapi.Message, dbConfig Config) string {
 	str := "&#10071;Вы не состоите ни в одной команде."
@@ -178,7 +178,7 @@ func ShowUsers(message *tgbotapi.Message, isMyTeam bool, dbConfig Config) string
 	}
 	users = dbConfig.DBSelectUsers(condition)
 	for key, value := range users {
-		str += fmt.Sprintf("%d. ник: <b>%s</b>; команда: %s\n", key+1, value.NickName, value.Team)
+		str += fmt.Sprintf("%d. Ник: <b>%s</b>; Команда: <b>%s</b>\n", key+1, value.NickName, value.Team)
 	}
 	return str
 }
@@ -196,42 +196,15 @@ func GetNickName(from *tgbotapi.User) (int, string) {
 	return from.ID, fmt.Sprintf("%s %s", from.FirstName, from.LastName)
 }
 func GetListHelps(from *tgbotapi.User, adminID int) (commandList string) {
-	type commandStruct struct {
-		admin   bool
-		command string
-	}
-
-	var commands = []commandStruct{
-		{false, "/help - информация по всем доступным командам;\n"},
-		{false, "/codes - коды;\n"},
-		{false, "/generate, /gen - сгенерировать коды;\n"},
-		{false, "/text - текст приквела;\n"},
-		{false, "/create имя команды - создать команду;\n"},
-		{false, "/join - вступить в команду;\n"},
-		{false, "/list - список участников команды;\n"},
-		{false, "/listusers - список участников в командах;\n"},
-		{false, "/leave - выйти из команды;\n"},
-		{false, "/invite - получить ссылку приглашение в команду;\n"},
-		{false, "/teams - список всех команд;\n"},
-		{true, "<b>==========================</b>\n"},
-		{true, "/show - показать все коды;\n"},
-		{true, "/reset - удалить данные из таблицы teams или codes;\n"},
-		{true, "/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n"},
-		{true, "/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n"},
-		{true, "/delete - удалить указанный код;\n"},
-		{true, "/listteams - список всех команд;\n"},
-		{true, "/createdb - создать таблицы в БД;\n"},
-	}
-
-	for _, command := range commands {
-		if command.admin && adminID != from.ID {
+	for _, command := range Commands {
+		if command.IsAdmin && adminID != from.ID {
 			continue
 		}
-		commandList += command.command
+		commandList += fmt.Sprintf("/%s - %s;\n", command.Command, command.Describe)
 	}
 	return commandList
 }
-func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot *tgbotapi.BotAPI) error {
+func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot *tgbotapi.BotAPI, levelButtons string) error {
 	var pointerStr int
 	var msg tgbotapi.MessageConfig
 	var err error
@@ -240,6 +213,18 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 	if len(message) == 0 {
 		message = "&#9940;Нет данных."
 	}
+
+	keyboard := tgbotapi.InlineKeyboardMarkup{}
+	for _, button := range Commands {
+		if button.LevelMenu != levelButtons && button.LevelMenu != "all" {
+			continue
+		}
+		var row []tgbotapi.InlineKeyboardButton
+		btn := tgbotapi.NewInlineKeyboardButtonData(button.Describe, button.Command)
+		row = append(row, btn)
+		keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
+	}
+	msg.ReplyMarkup = keyboard
 
 	if replyToMessageID != 0 {
 		msg.ReplyToMessageID = replyToMessageID

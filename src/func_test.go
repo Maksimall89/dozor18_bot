@@ -52,8 +52,8 @@ func TestGetListHelps(t *testing.T) {
 	}
 
 	userHelps := "/help - информация по всем доступным командам;\n" +
-		"/codes - коды;\n" +
-		"/generate, /gen - сгенерировать коды;\n" +
+		"/codes - список кодов;\n" +
+		"/gen - сгенерировать коды;\n" +
 		"/text - текст приквела;\n" +
 		"/create имя команды - создать команду;\n" +
 		"/join - вступить в команду;\n" +
@@ -63,7 +63,6 @@ func TestGetListHelps(t *testing.T) {
 		"/invite - получить ссылку приглашение в команду;\n" +
 		"/teams - список всех команд;\n"
 	adminHelps := userHelps +
-		"<b>==========================</b>\n" +
 		"/show - показать все коды;\n" +
 		"/reset - удалить данные из таблицы teams или codes;\n" +
 		"/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n" +
