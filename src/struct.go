@@ -66,3 +66,8 @@ type Users struct {
 	Login    string
 	Password string
 }
+
+type Buttons struct {
+	describe string
+	command  string
+}
