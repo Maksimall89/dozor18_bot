@@ -56,12 +56,14 @@ func main() {
 	// read from channel
 	for update := range updates {
 
-		command = strings.ToLower(update.Message.Command())
 		if update.CallbackQuery != nil {
 			command = update.CallbackQuery.Data
-			//	update.Message = update.CallbackQuery.Message
+			update.Message = update.CallbackQuery.Message
 			_, _ = bot.Send(tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID,
 				fmt.Sprintf("Ok, I remember %s", command)))
+		}
+		if update.Message.Command() != "" {
+			command = strings.ToLower(update.Message.Command())
 		}
 
 		//if update.Message == nil || update.Message.From.IsBot {
