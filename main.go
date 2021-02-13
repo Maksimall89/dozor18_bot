@@ -52,21 +52,24 @@ func main() {
 	dbConfig.Init()
 
 	var str string
+	var command string
 	// read from channel
 	for update := range updates {
 
+		command = strings.ToLower(update.Message.Command())
 		if update.CallbackQuery != nil {
-			class := update.CallbackQuery.Data
+			command = update.CallbackQuery.Data
+			update.Message = update.CallbackQuery.Message
 			_, _ = bot.Send(tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID,
-				fmt.Sprintf("Ok, I remember %s", class)))
+				fmt.Sprintf("Ok, I remember %s", command)))
 		}
 
-		if update.Message == nil || update.Message.From.IsBot {
-			continue
-		}
+		//if update.Message == nil || update.Message.From.IsBot {
+		//	continue
+		//}
 
 		if update.Message.From.ID == configuration.OwnID {
-			switch strings.ToLower(update.Message.Command()) {
+			switch command {
 			case "reset", "restart":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBTruncTables(strings.TrimSpace(strings.ToLower(update.Message.CommandArguments()))), 0, bot)
 				continue
@@ -96,7 +99,7 @@ func main() {
 			}
 		}
 
-		switch strings.ToLower(update.Message.Command()) {
+		switch command {
 		case "codes":
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.ShowCodesMy(update.Message, dbConfig), update.Message.MessageID, bot)
 		case "generate", "gen":
