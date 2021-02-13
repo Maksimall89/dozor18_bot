@@ -61,6 +61,8 @@ func main() {
 			if update.CallbackQuery != nil {
 				command = update.CallbackQuery.Data
 				update.Message = update.CallbackQuery.Message
+				update.Message.From.ID = update.CallbackQuery.From.ID
+				fmt.Println(update.CallbackQuery)
 			} else {
 				continue
 			}
