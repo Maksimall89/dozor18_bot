@@ -58,6 +58,12 @@ func main() {
 			continue
 		}
 
+		if update.CallbackQuery != nil {
+			class := update.CallbackQuery.Data
+			_, _ = bot.Send(tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID,
+				fmt.Sprintf("Ok, I remember %s", class)))
+		}
+
 		if update.Message.From.ID == configuration.OwnID {
 			switch strings.ToLower(update.Message.Command()) {
 			case "reset", "restart":
@@ -106,7 +112,7 @@ func main() {
 				str = src.CodeGen(strArr[1], strArr[2], number, src.NameFileWords)
 			}
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot)
-		case "text":
+		case "text", "task":
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">dozor18.ru</a>.`, update.Message.MessageID, bot)
 		case "help", "start":
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetListHelps(update.Message.From, configuration.OwnID), update.Message.MessageID, bot)
