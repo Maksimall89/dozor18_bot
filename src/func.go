@@ -85,7 +85,7 @@ func ShowCodesAll(dbConfig Config) string {
 	// ID, Time, NickName, Code, Danger, Sector
 	str := fmt.Sprintf("Всего кодов в движке: <b>%d</b>\n&#9989;Коды верные:\n", len(dataAllRight))
 	for number, value := range dataAllRight {
-		str += fmt.Sprintf("%d. <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s;\n", number+1, value.Code, value.Danger, value.Sector)
+		str += fmt.Sprintf("%d. <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s; <b>Бонус:</b> %d сек;\n", number+1, value.Code, value.Danger, value.Sector, value.TimeBonus)
 	}
 
 	dataAllUsers := dbConfig.DBSelectCodesUser("")
@@ -116,13 +116,13 @@ func ShowCodesMy(message *tgbotapi.Message, dbConfig Config) string {
 		isFound = false
 		for _, valueUser := range dataUser {
 			if strings.ToLower(strings.TrimSpace(valueUser.Code)) == valueRight.Code {
-				str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s)\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.Code)
+				str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s), бонус <b>%d</b> сек\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.Code, valueRight.TimeBonus)
 				isFound = true
 				break
 			}
 		}
 		if !isFound {
-			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят\n", number+1, valueRight.Danger, valueRight.Sector)
+			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят, бонус <b>%d</b> сек\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.TimeBonus)
 		}
 	}
 	return str
