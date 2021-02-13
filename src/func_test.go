@@ -63,7 +63,7 @@ func TestGetListHelps(t *testing.T) {
 		"/invite - получить ссылку приглашение в команду;\n" +
 		"/teams - список всех команд;\n"
 	adminHelps := userHelps +
-		"<b>===========================================</b>\n" +
+		"<b>==========================</b>\n" +
 		"/show - показать все коды;\n" +
 		"/reset - удалить данные из таблицы teams или codes;\n" +
 		"/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n" +
@@ -114,6 +114,9 @@ func TestCheckMessage(t *testing.T) {
 	tests = []testPair{
 		{"qwe", ""},
 		{"qwfsdfSSFS efsdf", ""},
+		{"qwf123gdf5g", ""},
+		{"qwfhr63", ""},
+		{"код14444", ""},
 	}
 	for _, pair := range tests {
 		result := CheckMessage(pair.input)

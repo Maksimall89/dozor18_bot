@@ -32,7 +32,6 @@ jobs:
       name: "Docker Quality Analysis"
       script: docker run --rm -i hadolint/hadolint:latest < Dockerfile
 
-
 stages:
   - "Compile"
   - "Tests"

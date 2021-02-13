@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
+	"regexp"
 	"strings"
 )
 
@@ -177,7 +178,7 @@ func ShowUsers(message *tgbotapi.Message, isMyTeam bool, dbConfig Config) string
 	}
 	users = dbConfig.DBSelectUsers(condition)
 	for key, value := range users {
-		str += fmt.Sprintf("%d. <b>%s</b>; %s\n", key, value.NickName, value.Team)
+		str += fmt.Sprintf("%d. ник: <b>%s</b>; команда: %s\n", key+1, value.NickName, value.Team)
 	}
 	return str
 }
@@ -212,7 +213,7 @@ func GetListHelps(from *tgbotapi.User, adminID int) (commandList string) {
 		{false, "/leave - выйти из команды;\n"},
 		{false, "/invite - получить ссылку приглашение в команду;\n"},
 		{false, "/teams - список всех команд;\n"},
-		{true, "<b>===========================================</b>\n"},
+		{true, "<b>==========================</b>\n"},
 		{true, "/show - показать все коды;\n"},
 		{true, "/reset - удалить данные из таблицы teams или codes;\n"},
 		{true, "/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n"},
@@ -276,7 +277,7 @@ func CheckMessage(message string) error {
 	if len(message) < 3 {
 		return errors.New("&#10071;Сообщение слишком короткое")
 	}
-	if strings.ContainsAny(strings.ToLower(message), "\"`~-\\=:;/,.'*+@#№%$%^&(){}[]|") {
+	if ok, _ := regexp.MatchString(`^[а-яА-ЯёЁa-zA-Z0-9 ]+$`, message); !ok {
 		return errors.New("&#10071;Недопустимые символы в сообщении. Можно использовать лишь буквы и цифры русского и английского алфавита")
 	}
 	return nil
