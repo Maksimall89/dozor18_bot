@@ -151,8 +151,8 @@ func (dbConfig *Config) DBSelectCodesRight() []Codes {
 }
 func (dbConfig *Config) DBInsertCodesRight(addData string) string {
 	strArr := strings.Split(addData, ",")
-	if len(strArr) < 3 {
-		return "&#10071;Нет всех аргументов: <code>/add Code,Danger,Sector</code>"
+	if len(strArr) < 4 {
+		return "&#10071;Нет всех аргументов: <code>/add Code,Danger,Sector,TimeBonus</code>"
 	}
 
 	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
@@ -189,7 +189,7 @@ func (dbConfig *Config) DBDeleteCodesRight(deleteStr string) string {
 }
 func (dbConfig *Config) DBUpdateCodesRight(updateData string) string {
 	strArr := strings.Split(updateData, ",")
-	if len(strArr) < 4 {
+	if len(strArr) < 5 {
 		return "&#10071;Нет всех аргументов: <code>/update CodeNew,Danger,Sector,TimeBonus,CodeOld</code>"
 	}
 
