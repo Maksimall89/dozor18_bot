@@ -241,6 +241,24 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 		message = "&#9940;Нет данных."
 	}
 
+	///////////////////////////////////////////////////////////////////////////////////
+	classes := []string{
+		"help",
+		"codes",
+		"task",
+		"list",
+	}
+
+	keyboard := tgbotapi.InlineKeyboardMarkup{}
+	for _, class := range classes {
+		var row []tgbotapi.InlineKeyboardButton
+		btn := tgbotapi.NewInlineKeyboardButtonData(class, class)
+		row = append(row, btn)
+		keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
+	}
+	msg.ReplyMarkup = keyboard
+	///////////////////////////////////////////////////////////////////////////////////
+
 	if replyToMessageID != 0 {
 		msg.ReplyToMessageID = replyToMessageID
 	}
