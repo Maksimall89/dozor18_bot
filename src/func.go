@@ -242,10 +242,10 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 	}
 
 	buttons := []Buttons{
-		{"&#9989;help - информация по всем доступным командам", "help"},
-		{"&#9989;codes - коды", "codes"},
-		{"&#9989;text - текст приквела", "text"},
-		{"&#9989;list - список участников команды", "list"},
+		{"&#9989; help - информация по всем доступным командам", "help"},
+		{"&#9989; codes - коды", "codes"},
+		{"&#9989; text - текст приквела", "text"},
+		{"&#9989; list - список участников команды", "list"},
 	}
 
 	keyboard := tgbotapi.InlineKeyboardMarkup{}
