@@ -62,9 +62,9 @@ func main() {
 			_, _ = bot.Send(tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID,
 				fmt.Sprintf("Ok, I remember %s", command)))
 		}
-		if update.Message.Command() != "" {
-			command = strings.ToLower(update.Message.Command())
-		}
+		//if update.Message.Command() != "" {
+		//	command = strings.ToLower(update.Message.Command())
+		//}
 
 		//if update.Message == nil || update.Message.From.IsBot {
 		//	continue
