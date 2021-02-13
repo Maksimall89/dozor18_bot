@@ -75,12 +75,12 @@ type CommandStruct struct {
 }
 
 var Commands = []CommandStruct{
-	{false, "информация по всем доступным командам", "help", "main"},
+	{false, "информация по всем доступным командам", "help", "all"},
 	{false, "список кодов", "codes", "main"},
 	{false, "сгенерировать коды", "gen", ""},
 	{false, "текст приквела", "text", "main"},
-	{false, "создать команду", "create имя команды", "team"},
-	{false, "вступить в команду", "join", "team"},
+	{false, "создать команду", "create имя команды", ""},
+	{false, "вступить в команду", "join", ""},
 	{false, "список участников команды", "list", "team"},
 	{false, "список участников в командах", "listusers", "team"},
 	{false, "выйти из команды", "leave", "team"},

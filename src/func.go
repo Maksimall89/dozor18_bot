@@ -216,7 +216,7 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 
 	keyboard := tgbotapi.InlineKeyboardMarkup{}
 	for _, button := range Commands {
-		if button.LevelMenu != levelButtons {
+		if button.LevelMenu != levelButtons && button.LevelMenu != "all" {
 			continue
 		}
 		var row []tgbotapi.InlineKeyboardButton
