@@ -178,7 +178,7 @@ func ShowUsers(message *tgbotapi.Message, isMyTeam bool, dbConfig Config) string
 	}
 	users = dbConfig.DBSelectUsers(condition)
 	for key, value := range users {
-		str += fmt.Sprintf("%d. ник: <b>%s</b>; команда: %s\n", key+1, value.NickName, value.Team)
+		str += fmt.Sprintf("%d. Ник: <b>%s</b>; Команда: <b>%s</b>\n", key+1, value.NickName, value.Team)
 	}
 	return str
 }
