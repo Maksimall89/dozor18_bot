@@ -38,14 +38,15 @@ func (dbConfig *Config) Init() {
 }
 
 type Codes struct {
-	ID       int
-	Time     string
-	NickName string
-	UserID   int
-	Code     string
-	Danger   string
-	Team     string
-	Sector   string
+	ID        int
+	Time      string
+	NickName  string
+	UserID    int
+	Code      string
+	Danger    string
+	Team      string
+	Sector    string
+	TimeBonus int
 }
 
 type Teams struct {
