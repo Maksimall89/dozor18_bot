@@ -199,7 +199,7 @@ func (dbConfig *Config) DBUpdateCodesRight(updateData string) string {
 	}
 	defer db.Close()
 
-	_, err = db.Exec("UPDATE CodesRight SET Code = $1, Danger = $2, Sector=$3, TimeBonus=$4 WHERE Code = $4",
+	_, err = db.Exec("UPDATE CodesRight SET Code = $1, Danger = $2, Sector=$3, TimeBonus=$4 WHERE Code = $5",
 		strings.TrimSpace(strArr[0]), strArr[1], strArr[2], strings.TrimSpace(strArr[3]), strings.TrimSpace(strArr[4]))
 	if err != nil {
 		return fmt.Sprintf("&#10071;Unable to UPDATE CodesRight: %v\n", err)
