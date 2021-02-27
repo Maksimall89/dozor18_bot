@@ -136,7 +136,7 @@ func (dbConfig *Config) DBSelectCodesRight() []Codes {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT ID, Code, Danger, Sector, TimeBonus FROM CodesRight ORDER BY ID")
+	rows, err := db.Query("SELECT ID, Code, Danger, Sector, TimeBonus, TaskID FROM CodesRight ORDER BY ID")
 	if err != nil {
 		log.Printf("&#9940;Unable to SELECT CodesRight: %v\n", err)
 	}
@@ -145,7 +145,7 @@ func (dbConfig *Config) DBSelectCodesRight() []Codes {
 	var data []Codes
 	for rows.Next() {
 		d := Codes{}
-		err := rows.Scan(&d.ID, &d.Code, &d.Danger, &d.Sector, &d.TimeBonus)
+		err := rows.Scan(&d.ID, &d.Code, &d.Danger, &d.Sector, &d.TimeBonus, &d.TaskID)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -167,8 +167,8 @@ func (dbConfig *Config) DBInsertCodesRight(addData string) string {
 	}
 	defer db.Close()
 
-	_, err = db.Exec("INSERT INTO CodesRight (Code, Danger, Sector, TimeBonus) VALUES ($1, $2, $3, $4)",
-		strings.ToLower(strings.TrimSpace(strArr[0])), strings.TrimSpace(strArr[1]), strings.TrimSpace(strArr[2]), strings.TrimSpace(strArr[3]))
+	_, err = db.Exec("INSERT INTO CodesRight (Code, Danger, Sector, TimeBonus, TaskID) VALUES ($1, $2, $3, $4, $5)",
+		strings.ToLower(strings.TrimSpace(strArr[0])), strings.TrimSpace(strArr[1]), strings.TrimSpace(strArr[2]), strings.TrimSpace(strArr[3]), strings.TrimSpace(strArr[4]))
 	if err != nil {
 		return fmt.Sprintf("&#9940;Unable to INSERT INTO CodesRight: %v\n", err)
 	}
@@ -196,7 +196,7 @@ func (dbConfig *Config) DBDeleteCodesRight(deleteStr string) string {
 func (dbConfig *Config) DBUpdateCodesRight(updateData string) string {
 	strArr := strings.Split(updateData, ",")
 	if len(strArr) < 5 {
-		return "&#10071;Нет всех аргументов: <code>/update CodeNew,Danger,Sector,TimeBonus,CodeOld</code>"
+		return "&#10071;Нет всех аргументов: <code>/update CodeNew,Danger,Sector,TimeBonus,TaskID,CodeOld</code>"
 	}
 
 	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
@@ -205,8 +205,8 @@ func (dbConfig *Config) DBUpdateCodesRight(updateData string) string {
 	}
 	defer db.Close()
 
-	_, err = db.Exec("UPDATE CodesRight SET Code = $1, Danger = $2, Sector=$3, TimeBonus=$4 WHERE Code = $5",
-		strings.TrimSpace(strArr[0]), strArr[1], strArr[2], strings.TrimSpace(strArr[3]), strings.TrimSpace(strArr[4]))
+	_, err = db.Exec("UPDATE CodesRight SET Code = $1, Danger = $2, Sector=$3, TimeBonus=$4, TaskID=$5 WHERE Code = $6",
+		strings.TrimSpace(strArr[0]), strArr[1], strArr[2], strings.TrimSpace(strArr[3]), strings.TrimSpace(strArr[4]), strings.TrimSpace(strArr[4]))
 	if err != nil {
 		return fmt.Sprintf("&#10071;Unable to UPDATE CodesRight: %v\n", err)
 	}
@@ -330,4 +330,86 @@ func (dbConfig *Config) DBInsertTeam(teams *Teams) string {
 	dbConfig.DBInsertUser(&user)
 
 	return fmt.Sprintf("&#9989;Команда <b>%s</b> создана, для вступления в неё введите: <code>/join %s, %s </code>", teams.Team, teams.Team, teams.Hash)
+}
+
+func (dbConfig *Config) DBSelectTask(condition string) []Tasks {
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
+	if err != nil {
+		log.Printf(errConnectPattern, err)
+	}
+	defer db.Close()
+
+	query := fmt.Sprintf("SELECT id, Text FROM Tasks %s", condition)
+	rows, err := db.Query(query)
+	if err != nil {
+		log.Printf("&#9940;Unable to SELECT Tasks: %v\n", err)
+	}
+	defer rows.Close()
+
+	var data []Tasks
+	for rows.Next() {
+		d := Tasks{}
+		err := rows.Scan(&d.ID, &d.Text)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		data = append(data, d)
+	}
+
+	return data
+}
+func (dbConfig *Config) DBInsertTask(tasks *Tasks) string {
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
+	if err != nil {
+		log.Printf(errConnectPattern, err)
+	}
+	defer db.Close()
+
+	// create tasks
+	_, err = db.Exec("INSERT INTO Tasks (ID, Text) VALUES ($1, $2)",
+		tasks.ID, tasks.Text)
+	if err != nil {
+		log.Println(err)
+		return "&#10071; Такое задание уже есть"
+	}
+	return "&#9989;Задание <b>добавлено</b> в БД."
+}
+func (dbConfig *Config) DBDeleteTask(deleteStr string) string {
+	if len(deleteStr) < 2 {
+		return "&#10071;Нет всех аргументов: <code>/delete taskID</code>"
+	}
+
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
+	if err != nil {
+		return fmt.Sprintf(errConnectPattern, err)
+	}
+	defer db.Close()
+
+	_, err = db.Exec("DELETE FROM Tasks WHERE ID = $1", deleteStr)
+	if err != nil {
+		return fmt.Sprintf("&#10071;Unable to DELETE Tasks: %v\n", err)
+	}
+
+	return "&#9989;Задание <b>удалено</b> в БД=" + deleteStr
+}
+func (dbConfig *Config) DBUpdateTask(updateData string) string {
+	strArr := strings.Split(updateData, ",")
+	if len(strArr) < 3 {
+		return "&#10071;Нет всех аргументов: <code>/update TaskID,Text,TaskIOldD</code>"
+	}
+
+	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
+	if err != nil {
+		return fmt.Sprintf(errConnectPattern, err)
+	}
+	defer db.Close()
+
+	_, err = db.Exec("UPDATE Tasks SET ID = $1, Text = $2 WHERE ID = $3",
+		strings.TrimSpace(strArr[0]), strings.TrimSpace(strArr[1]), strings.TrimSpace(strArr[2]))
+	if err != nil {
+		return fmt.Sprintf("&#10071;Unable to UPDATE Tasks: %v\n", err)
+	}
+
+	return "&#9989;Задание <b>обновлено</b> в БД."
 }

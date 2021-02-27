@@ -47,6 +47,7 @@ type Codes struct {
 	Team      string
 	Sector    string
 	TimeBonus int
+	TaskID    int
 }
 
 type Teams struct {
@@ -56,6 +57,11 @@ type Teams struct {
 	UserID   int
 	Team     string
 	Hash     string
+}
+
+type Tasks struct {
+	ID   int
+	Text string
 }
 
 type Users struct {

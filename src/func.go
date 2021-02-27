@@ -224,14 +224,12 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 		row = append(row, btn)
 		keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
 	}
-	msg.ReplyMarkup = keyboard
-
 	if replyToMessageID != 0 {
 		msg.ReplyToMessageID = replyToMessageID
 	}
 	msg.ChatID = chatId
 	msg.ParseMode = "HTML"
-
+	msg.ReplyMarkup = keyboard
 	for !isEnd {
 		if len(message) > 4090 { // ограничение на длину одного сообщения 4096
 			pointerStr = strings.LastIndex(message[0:4090], "\n")
