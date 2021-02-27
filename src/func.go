@@ -49,7 +49,7 @@ func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig Config)
 		strArr := strings.Split(valueRight.Code, "|")
 		for _, value := range strArr {
 			if value == code {
-				str = fmt.Sprintf("&#9989;Снят код <b>№%d</b> с КО <b>%s</b> из сектора <b>%s</b>", numberRight, valueRight.Danger, valueRight.Sector)
+				str = fmt.Sprintf("&#9989;Снят код <b>№%d</b> с КО <b>%s</b> из сектора <b>%s</b>", numberRight+1, valueRight.Danger, valueRight.Sector)
 				codes.UserID = UserID
 				codes.NickName = NickName
 				codes.Code = valueRight.Code
