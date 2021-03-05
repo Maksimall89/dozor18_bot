@@ -121,7 +121,7 @@ func (dbConfig *Config) DBInsertCodesUsers(codes *Codes) string {
 	}
 	defer db.Close()
 
-	_, err = db.Exec("INSERT INTO CodesUser (Time, NickName, UserID, Code, Team) VALUES ((now() at time zone 'UTC-4'), $1, $2, $3, $4)",
+	_, err = db.Exec("INSERT INTO CodesUser (Time, NickName, UserID, Code, Team) VALUES ((now() at time zone 'UTC-4'), $1, $2, lower($3), $4)",
 		codes.NickName, codes.UserID, codes.Code, codes.Team)
 	if err != nil {
 		log.Println(err)
@@ -167,8 +167,10 @@ func (dbConfig *Config) DBInsertCodesRight(addData string) string {
 	}
 	defer db.Close()
 
-	_, err = db.Exec("INSERT INTO CodesRight (Code, Danger, Sector, TimeBonus, TaskID) VALUES ($1, $2, $3, $4, $5)",
-		strings.ToLower(strings.TrimSpace(strArr[0])), strings.TrimSpace(strArr[1]), strings.TrimSpace(strArr[2]), strings.TrimSpace(strArr[3]), strings.TrimSpace(strArr[4]))
+	ArrTrimSpace(strArr)
+
+	_, err = db.Exec("INSERT INTO CodesRight (Code, Danger, Sector, TimeBonus, TaskID) VALUES (lower($1), $2, $3, $4, $5)",
+		strArr[0], strArr[1], strArr[2], strArr[3], strArr[4])
 	if err != nil {
 		return fmt.Sprintf("&#9940;Unable to INSERT INTO CodesRight: %v\n", err)
 	}
@@ -186,7 +188,7 @@ func (dbConfig *Config) DBDeleteCodesRight(deleteStr string) string {
 	}
 	defer db.Close()
 
-	_, err = db.Exec("DELETE FROM CodesRight WHERE Code = $1", deleteStr)
+	_, err = db.Exec("DELETE FROM CodesRight WHERE Code = lower($1)", strings.TrimSpace(deleteStr))
 	if err != nil {
 		return fmt.Sprintf("&#10071;Unable to DELETE CodesRight: %v\n", err)
 	}
@@ -199,14 +201,16 @@ func (dbConfig *Config) DBUpdateCodesRight(updateData string) string {
 		return "&#10071;Нет всех аргументов: <code>/update CodeNew,Danger,Sector,TimeBonus,TaskID,CodeOld</code>"
 	}
 
+	ArrTrimSpace(strArr)
+
 	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
 	if err != nil {
 		return fmt.Sprintf(errConnectPattern, err)
 	}
 	defer db.Close()
 
-	_, err = db.Exec("UPDATE CodesRight SET Code = $1, Danger = $2, Sector=$3, TimeBonus=$4, TaskID=$5 WHERE Code = $6",
-		strings.TrimSpace(strArr[0]), strArr[1], strArr[2], strings.TrimSpace(strArr[3]), strings.TrimSpace(strArr[4]), strings.TrimSpace(strArr[4]))
+	_, err = db.Exec("UPDATE CodesRight SET Code = lower($1), Danger = $2, Sector=$3, TimeBonus=$4, TaskID=$5 WHERE Code = lower($6)",
+		strArr[0], strArr[1], strArr[2], strArr[3], strArr[4], strArr[4])
 	if err != nil {
 		return fmt.Sprintf("&#10071;Unable to UPDATE CodesRight: %v\n", err)
 	}
@@ -405,8 +409,10 @@ func (dbConfig *Config) DBUpdateTask(updateData string) string {
 	}
 	defer db.Close()
 
+	ArrTrimSpace(strArr)
+
 	_, err = db.Exec("UPDATE Tasks SET ID = $1, Text = $2 WHERE ID = $3",
-		strings.TrimSpace(strArr[0]), strings.TrimSpace(strArr[1]), strings.TrimSpace(strArr[2]))
+		strArr[0], strArr[1], strArr[2])
 	if err != nil {
 		return fmt.Sprintf("&#10071;Unable to UPDATE Tasks: %v\n", err)
 	}
