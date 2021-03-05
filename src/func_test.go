@@ -65,8 +65,8 @@ func TestGetListHelps(t *testing.T) {
 	adminHelps := userHelps +
 		"/show - показать все коды;\n" +
 		"/reset - удалить данные из таблицы <b>teams</b> или <b>codes</b>;\n" +
-		"/add - добавить новые правильные коды в формате: <b>Code,Danger,Sector</b>;\n" +
-		"/update - обновить коды в бд, в формате: <b>CodeNew,Danger,Sector,CodeOld</b>;\n" +
+		"/add - добавить новые правильные коды в формате: <b>Code,Danger,Sector,TimeBonus,Tasks</b>;\n" +
+		"/update - обновить коды в бд, в формате: <b>CodeNew,Danger,Sector,TimeBonus,TaskID,CodeOld</b>;\n" +
 		"/delete - удалить указанный код;\n" +
 		"/listteams - список всех команд;\n" +
 		"/createdb - создать таблицы в БД;\n"

@@ -158,7 +158,7 @@ func (dbConfig *Config) DBSelectCodesRight() []Codes {
 func (dbConfig *Config) DBInsertCodesRight(addData string) string {
 	strArr := strings.Split(addData, ",")
 	if len(strArr) < 4 {
-		return "&#10071;Нет всех аргументов: <code>/add Code,Danger,Sector,TimeBonus</code>"
+		return "&#10071;Нет всех аргументов: <code>/add Code,Danger,Sector,TimeBonus,Tasks</code>"
 	}
 
 	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
