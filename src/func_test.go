@@ -124,3 +124,28 @@ func TestCheckMessage(t *testing.T) {
 		}
 	}
 }
+
+func TestArrTrimSpace(t *testing.T) {
+	t.Parallel()
+
+	type testPair struct {
+		input  []string
+		output []string
+	}
+
+	rightArr := []string{"a", "b", "c", "d"}
+	var tests = []testPair{
+		{[]string{" a", "b ", " c ", "d"}, rightArr},
+		{[]string{"a", " b b b", "c c ", "d e"}, []string{"a", "b b b", "c c", "d e"}},
+		{[]string{"a", "b", "c", "d"}, rightArr},
+	}
+
+	for _, pair := range tests {
+		ArrTrimSpace(pair.input)
+		for number, value := range pair.input {
+			if pair.output[number] != value {
+				t.Errorf("For %v\nexpected %s", pair.output[number], value)
+			}
+		}
+	}
+}

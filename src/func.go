@@ -115,7 +115,7 @@ func ShowCodesMy(message *tgbotapi.Message, dbConfig Config) string {
 	for number, valueRight := range dataRight {
 		isFound = false
 		for _, valueUser := range dataUser {
-			if strings.ToLower(strings.TrimSpace(valueUser.Code)) == valueRight.Code {
+			if valueUser.Code == valueRight.Code {
 				str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s), бонус <b>%d</b> сек\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.Code, valueRight.TimeBonus)
 				isFound = true
 				break
@@ -264,4 +264,10 @@ func CheckMessage(message string) error {
 		return errors.New("&#10071;Недопустимые символы в сообщении. Можно использовать лишь буквы и цифры русского и английского алфавита")
 	}
 	return nil
+}
+
+func ArrTrimSpace(arr []string) {
+	for number, value := range arr {
+		arr[number] = strings.TrimSpace(value)
+	}
 }
