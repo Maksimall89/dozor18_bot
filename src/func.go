@@ -85,7 +85,7 @@ func ShowCodesAll(dbConfig Config) string {
 	// ID, Time, NickName, Code, Danger, Sector
 	str := fmt.Sprintf("Всего кодов в движке: <b>%d</b>\n&#9989;Коды верные:\n", len(dataAllRight))
 	for number, value := range dataAllRight {
-		str += fmt.Sprintf("%d. <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s; <b>Бонус:</b> %d сек;\n", number+1, value.Code, value.Danger, value.Sector, value.TimeBonus)
+		str += fmt.Sprintf("%d. <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s; <b>Бонус:</b>%s;\n", number+1, value.Code, value.Danger, value.Sector, ConvertTimeSec(value.TimeBonus))
 	}
 
 	dataAllUsers := dbConfig.DBSelectCodesUser("")
@@ -116,13 +116,13 @@ func ShowCodesMy(message *tgbotapi.Message, dbConfig Config) string {
 		isFound = false
 		for _, valueUser := range dataUser {
 			if valueUser.Code == valueRight.Code {
-				str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s), бонус <b>%d</b> сек\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.Code, valueRight.TimeBonus)
+				str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s), бонус <b>%s</b>\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.Code, ConvertTimeSec(valueRight.TimeBonus))
 				isFound = true
 				break
 			}
 		}
 		if !isFound {
-			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят, бонус <b>%d</b> сек\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.TimeBonus)
+			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят, бонус <b>%s</b> сек\n", number+1, valueRight.Danger, valueRight.Sector, ConvertTimeSec(valueRight.TimeBonus))
 		}
 	}
 	return str
@@ -265,9 +265,72 @@ func CheckMessage(message string) error {
 	}
 	return nil
 }
-
 func ArrTrimSpace(arr []string) {
 	for number, value := range arr {
 		arr[number] = strings.TrimSpace(value)
 	}
+}
+func ConvertTimeSec(times int) string {
+	if times == 0 {
+		return "0 секунд"
+	}
+	// из секунд в минуту
+	str := ""
+	timeSec := times % 60
+	timeMin := times / 60
+	timeHour := times / 3600
+	if timeHour > 0 {
+		timeMin = timeMin % 60
+	}
+	timeDay := times / 86400
+	if timeDay > 0 {
+		timeMin = times % 60
+		timeHour = timeHour % 24
+	}
+
+	// Дни
+	switch timeDay {
+	case 0:
+		str += ""
+	case 1:
+		str += fmt.Sprintf("%d день ", timeDay)
+	case 2, 3, 4:
+		str += fmt.Sprintf("%d дня ", timeDay)
+	default:
+		str += fmt.Sprintf("%d дней ", timeDay)
+	}
+	// Часы
+	switch timeHour {
+	case 0:
+		str += ""
+	case 1:
+		str += fmt.Sprintf("%d час ", timeHour)
+	case 2, 3, 4:
+		str += fmt.Sprintf("%d часа ", timeHour)
+	default:
+		str += fmt.Sprintf("%d часов ", timeHour)
+	}
+	// Минуты
+	switch timeMin {
+	case 0:
+		str += ""
+	case 1:
+		str += fmt.Sprintf("%d минута ", timeMin)
+	case 2, 3, 4:
+		str += fmt.Sprintf("%d минуты ", timeMin)
+	default:
+		str += fmt.Sprintf("%d минут ", timeMin)
+	}
+	// Секунды
+	switch timeSec {
+	case 0:
+		str += ""
+	case 1:
+		str += fmt.Sprintf("%d секунда", timeSec)
+	case 2, 3, 4:
+		str += fmt.Sprintf("%d секунды", timeSec)
+	default:
+		str += fmt.Sprintf("%d секунд", timeSec)
+	}
+	return strings.TrimSpace(str)
 }

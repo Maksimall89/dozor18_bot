@@ -124,7 +124,6 @@ func TestCheckMessage(t *testing.T) {
 		}
 	}
 }
-
 func TestArrTrimSpace(t *testing.T) {
 	t.Parallel()
 
@@ -146,6 +145,37 @@ func TestArrTrimSpace(t *testing.T) {
 			if pair.output[number] != value {
 				t.Errorf("For %v\nexpected %s", pair.output[number], value)
 			}
+		}
+	}
+}
+func TestGeneralConvertTimeSec(t *testing.T) {
+	t.Parallel()
+
+	type testPair struct {
+		input  int
+		output string
+	}
+
+	var tests = []testPair{
+		{0, "0 секунд"},
+		{1, "1 секунда"},
+		{60, "1 минута"},
+		{66, "1 минута 6 секунд"},
+		{120, "2 минуты"},
+		{122, "2 минуты 2 секунды"},
+		{600, "10 минут"},
+		{3600, "1 час"},
+		{3601, "1 час 1 секунда"},
+		{3661, "1 час 1 минута 1 секунда"},
+		{86400, "1 день"},
+		{90061, "1 день 1 час 1 минута 1 секунда"},
+		{36045645, "417 дней 4 часа 45 минут 45 секунд"},
+	}
+
+	for _, pair := range tests {
+		result := ConvertTimeSec(pair.input)
+		if result != pair.output {
+			t.Errorf("For %d\nexpected %s\ngot %s", pair.input, pair.output, result)
 		}
 	}
 }
