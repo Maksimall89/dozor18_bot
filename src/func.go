@@ -122,7 +122,7 @@ func ShowCodesMy(message *tgbotapi.Message, dbConfig Config) string {
 			}
 		}
 		if !isFound {
-			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят, бонус <b>%s</b> сек\n", number+1, valueRight.Danger, valueRight.Sector, ConvertTimeSec(valueRight.TimeBonus))
+			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят, бонус <b>%s</b>\n", number+1, valueRight.Danger, valueRight.Sector, ConvertTimeSec(valueRight.TimeBonus))
 		}
 	}
 	return str
