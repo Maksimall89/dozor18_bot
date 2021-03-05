@@ -64,9 +64,9 @@ func TestGetListHelps(t *testing.T) {
 		"/teams - список всех команд;\n"
 	adminHelps := userHelps +
 		"/show - показать все коды;\n" +
-		"/reset - удалить данные из таблицы teams или codes;\n" +
-		"/add - добавить новые правильные коды в формате: Code,Danger,Sector;\n" +
-		"/update - обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld;\n" +
+		"/reset - удалить данные из таблицы <b>teams</b> или <b>codes</b>;\n" +
+		"/add - добавить новые правильные коды в формате: <b>Code,Danger,Sector,TimeBonus,Tasks</b>;\n" +
+		"/update - обновить коды в бд, в формате: <b>CodeNew,Danger,Sector,TimeBonus,TaskID,CodeOld</b>;\n" +
 		"/delete - удалить указанный код;\n" +
 		"/listteams - список всех команд;\n" +
 		"/createdb - создать таблицы в БД;\n"
@@ -121,6 +121,61 @@ func TestCheckMessage(t *testing.T) {
 		result := CheckMessage(pair.input)
 		if result != nil {
 			t.Errorf(errorExpect, pair.input, pair.output, result)
+		}
+	}
+}
+func TestArrTrimSpace(t *testing.T) {
+	t.Parallel()
+
+	type testPair struct {
+		input  []string
+		output []string
+	}
+
+	rightArr := []string{"a", "b", "c", "d"}
+	var tests = []testPair{
+		{[]string{" a", "b ", " c ", "d"}, rightArr},
+		{[]string{"a", " b b b", "c c ", "d e"}, []string{"a", "b b b", "c c", "d e"}},
+		{[]string{"a", "b", "c", "d"}, rightArr},
+	}
+
+	for _, pair := range tests {
+		ArrTrimSpace(pair.input)
+		for number, value := range pair.input {
+			if pair.output[number] != value {
+				t.Errorf("For %v\nexpected %s", pair.output[number], value)
+			}
+		}
+	}
+}
+func TestGeneralConvertTimeSec(t *testing.T) {
+	t.Parallel()
+
+	type testPair struct {
+		input  int
+		output string
+	}
+
+	var tests = []testPair{
+		{0, "0 секунд"},
+		{1, "1 секунда"},
+		{60, "1 минута"},
+		{66, "1 минута 6 секунд"},
+		{120, "2 минуты"},
+		{122, "2 минуты 2 секунды"},
+		{600, "10 минут"},
+		{3600, "1 час"},
+		{3601, "1 час 1 секунда"},
+		{3661, "1 час 1 минута 1 секунда"},
+		{86400, "1 день"},
+		{90061, "1 день 1 час 1 минута 1 секунда"},
+		{36045645, "417 дней 4 часа 45 минут 45 секунд"},
+	}
+
+	for _, pair := range tests {
+		result := ConvertTimeSec(pair.input)
+		if result != pair.output {
+			t.Errorf("For %d\nexpected %s\ngot %s", pair.input, pair.output, result)
 		}
 	}
 }

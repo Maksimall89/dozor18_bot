@@ -47,6 +47,7 @@ type Codes struct {
 	Team      string
 	Sector    string
 	TimeBonus int
+	TaskID    int
 }
 
 type Teams struct {
@@ -56,6 +57,11 @@ type Teams struct {
 	UserID   int
 	Team     string
 	Hash     string
+}
+
+type Tasks struct {
+	ID   int
+	Text string
 }
 
 type Users struct {
@@ -88,9 +94,9 @@ var Commands = []CommandStruct{
 	{false, "получить ссылку приглашение в команду", "invite", "team"},
 	{false, "список всех команд", "teams", "team"},
 	{true, "показать все коды", "show", "admin"},
-	{true, "удалить данные из таблицы teams или codes", "reset", ""},
-	{true, "добавить новые правильные коды в формате: Code,Danger,Sector", "add", ""},
-	{true, "обновить коды в бд, в формате: CodeNew,Danger,Sector,CodeOld", "update", ""},
+	{true, "удалить данные из таблицы <b>teams</b> или <b>codes</b>", "reset", ""},
+	{true, "добавить новые правильные коды в формате: <b>Code,Danger,Sector,TimeBonus,Tasks</b>", "add", ""},
+	{true, "обновить коды в бд, в формате: <b>CodeNew,Danger,Sector,TimeBonus,TaskID,CodeOld</b>", "update", ""},
 	{true, "удалить указанный код", "delete", ""},
 	{true, "список всех команд", "listteams", "admin"},
 	{true, "создать таблицы в БД", "createdb", ""},
