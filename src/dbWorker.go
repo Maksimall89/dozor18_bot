@@ -210,7 +210,7 @@ func (dbConfig *Config) DBUpdateCodesRight(updateData string) string {
 	defer db.Close()
 
 	_, err = db.Exec("UPDATE CodesRight SET Code = lower($1), Danger = $2, Sector=$3, TimeBonus=$4, TaskID=$5 WHERE Code = lower($6)",
-		strArr[0], strArr[1], strArr[2], strArr[3], strArr[4], strArr[4])
+		strArr[0], strArr[1], strArr[2], strArr[3], strArr[4], strings.ToLower(strArr[4]))
 	if err != nil {
 		return fmt.Sprintf("&#10071;Unable to UPDATE CodesRight: %v\n", err)
 	}
