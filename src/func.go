@@ -216,17 +216,16 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 
 	keyboard := tgbotapi.InlineKeyboardMarkup{}
 	var row []tgbotapi.InlineKeyboardButton
-	var btn tgbotapi.InlineKeyboardButton
 	for _, button := range Commands {
 		for _, levelMenu := range button.LevelMenu {
 			if levelMenu != levelButtons && levelMenu != "all" {
 				continue
 			}
+			btn := tgbotapi.NewInlineKeyboardButtonData(button.Describe, button.Command)
+			row = append(row, btn)
+			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
 		}
-		btn = tgbotapi.NewInlineKeyboardButtonData(button.Describe, button.Command)
-		row = append(row, btn)
 	}
-	keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
 
 	if replyToMessageID != 0 {
 		msg.ReplyToMessageID = replyToMessageID
