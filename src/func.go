@@ -59,7 +59,7 @@ func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig Config)
 			}
 		}
 	}
-	_ = SendMessageTelegram(message.Chat.ID, str, message.MessageID, bot, "main")
+	_ = SendMessageTelegram(message.Chat.ID, str, message.MessageID, bot, "codes")
 }
 func GetInvite(message *tgbotapi.Message, dbConfig Config) string {
 	str := "&#10071;Вы не состоите ни в одной команде."
@@ -85,7 +85,7 @@ func ShowCodesAll(dbConfig Config) string {
 	// ID, Time, NickName, Code, Danger, Sector
 	str := fmt.Sprintf("Всего кодов в движке: <b>%d</b>\n&#9989;Коды верные:\n", len(dataAllRight))
 	for number, value := range dataAllRight {
-		str += fmt.Sprintf("%d. <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s; <b>Бонус:</b>%s;\n", number+1, value.Code, value.Danger, value.Sector, ConvertTimeSec(value.TimeBonus))
+		str += fmt.Sprintf("%d. <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s; <b>Бонус:</b> %s;\n", number+1, value.Code, value.Danger, value.Sector, ConvertTimeSec(value.TimeBonus))
 	}
 
 	dataAllUsers := dbConfig.DBSelectCodesUser("")
@@ -215,15 +215,19 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 	}
 
 	keyboard := tgbotapi.InlineKeyboardMarkup{}
+	var row []tgbotapi.InlineKeyboardButton
+	var btn tgbotapi.InlineKeyboardButton
 	for _, button := range Commands {
-		if button.LevelMenu != levelButtons && button.LevelMenu != "all" {
-			continue
+		for _, levelMenu := range button.LevelMenu {
+			if levelMenu != levelButtons && levelMenu != "all" {
+				continue
+			}
 		}
-		var row []tgbotapi.InlineKeyboardButton
-		btn := tgbotapi.NewInlineKeyboardButtonData(button.Describe, button.Command)
+		btn = tgbotapi.NewInlineKeyboardButtonData(button.Describe, button.Command)
 		row = append(row, btn)
-		keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
 	}
+	keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
+
 	if replyToMessageID != 0 {
 		msg.ReplyToMessageID = replyToMessageID
 	}
