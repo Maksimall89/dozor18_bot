@@ -346,7 +346,7 @@ func createKeyboard(levelButtons string) (keyboard tgbotapi.InlineKeyboardMarkup
 	return keyboard
 }
 func GetTasks(message *tgbotapi.Message, dbConfig Config) string {
-	numberArr := strings.Split(message.Text, " ")
+	numberArr := strings.Split(message.CommandArguments(), " ")
 	if len(numberArr) == 0 {
 		numberArr[0] = "1"
 	}
