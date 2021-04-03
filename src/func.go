@@ -347,14 +347,24 @@ func createKeyboard(levelButtons string) (keyboard tgbotapi.InlineKeyboardMarkup
 	return keyboard
 }
 func GetTasks(message *tgbotapi.Message, dbConfig Config) string {
-	numberArr := strings.Split(message.CommandArguments(), " ")
-	if len(numberArr) == 0 {
-		numberArr = append(numberArr, "1")
-	}
+	idMap := make(map[int]int)
+	var counter int
+	var err error
 	var str string
+
+	numberArr := strings.Split(message.CommandArguments(), " ")
 	for _, number := range numberArr {
-		id, _ := strconv.Atoi(number)
-		tasks := dbConfig.DBSelectTask(fmt.Sprintf("WHERE Id='%s'", id))
+		idMap[counter], err = strconv.Atoi(number)
+		if err == nil {
+			counter++
+		}
+	}
+	if counter == 0 {
+		idMap[0] = 1
+	}
+
+	for counter = 0; counter < len(idMap); counter++ {
+		tasks := dbConfig.DBSelectTask(fmt.Sprintf("WHERE Id='%d'", idMap[counter]))
 		for _, task := range tasks {
 			str += fmt.Sprintf("<b>%d</b>. %s\n", task.ID, task.Text)
 		}
