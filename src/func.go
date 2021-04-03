@@ -231,7 +231,9 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 			}
 		}
 	}
-	//keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
+	if pointer < 3 {
+		keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
+	}
 
 	if replyToMessageID != 0 {
 		msg.ReplyToMessageID = replyToMessageID
