@@ -205,7 +205,7 @@ func GetListHelps(from *tgbotapi.User, adminID int) (commandList string) {
 	return commandList
 }
 func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot *tgbotapi.BotAPI, levelButtons string) error {
-	var pointerStr int
+	var pointer int
 	var msg tgbotapi.MessageConfig
 	var err error
 	isEnd := false
@@ -214,18 +214,23 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 		message = "&#9940;Нет данных."
 	}
 
-	keyboard := tgbotapi.InlineKeyboardMarkup{}
-	var row []tgbotapi.InlineKeyboardButton
+	var keyboard tgbotapi.InlineKeyboardMarkup
+	var buttons []tgbotapi.InlineKeyboardButton
 	for _, button := range Commands {
 		for _, levelMenu := range button.LevelMenu {
 			if levelMenu != levelButtons && levelMenu != "all" {
 				continue
 			}
 			btn := tgbotapi.NewInlineKeyboardButtonData(button.Describe, button.Command)
-			row = append(row, btn)
+			buttons = append(buttons, btn)
+			pointer++
+		}
+		if (pointer%3 == 0) || pointer == len(buttons) {
+			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, buttons)
+			buttons = buttons[:0]
+			pointer = 0
 		}
 	}
-	keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
 
 	if replyToMessageID != 0 {
 		msg.ReplyToMessageID = replyToMessageID
@@ -235,9 +240,9 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 	msg.ReplyMarkup = keyboard
 	for !isEnd {
 		if len(message) > 4090 { // ограничение на длину одного сообщения 4096
-			pointerStr = strings.LastIndex(message[0:4090], "\n")
-			msg.Text = message[0:pointerStr]
-			message = message[pointerStr:]
+			pointer = strings.LastIndex(message[0:4090], "\n")
+			msg.Text = message[0:pointer]
+			message = message[pointer:]
 		} else {
 			msg.Text = message
 			isEnd = true
