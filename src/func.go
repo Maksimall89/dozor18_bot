@@ -348,13 +348,13 @@ func createKeyboard(levelButtons string) (keyboard tgbotapi.InlineKeyboardMarkup
 func GetTasks(message *tgbotapi.Message, dbConfig Config) string {
 	numberArr := strings.Split(message.CommandArguments(), " ")
 	if len(numberArr) == 0 {
-		numberArr[0] = "1"
+		numberArr = append(numberArr, "1")
 	}
 	var str string
 	for _, number := range numberArr {
 		tasks := dbConfig.DBSelectTask(fmt.Sprintf("WHERE Id='%s'", number))
 		for _, task := range tasks {
-			str += fmt.Sprintf("<b>%d</d>. %s\n", task.ID, task.Text)
+			str += fmt.Sprintf("<b>%d</b>. %s\n", task.ID, task.Text)
 		}
 	}
 	if len(str) == 0 {
