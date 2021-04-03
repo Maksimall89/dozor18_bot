@@ -121,7 +121,7 @@ func main() {
 			}
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot, "main")
 		case "text", "task":
-			_ = src.SendMessageTelegram(update.Message.Chat.ID, `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">dozor18.ru</a>.`, update.Message.MessageID, bot, "main")
+			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetTasks(update.Message, dbConfig), update.Message.MessageID, bot, "main")
 		case "help", "start":
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetListHelps(update.Message.From, configuration.OwnID), update.Message.MessageID, bot, "main")
 		case "create":

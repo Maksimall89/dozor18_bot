@@ -345,3 +345,20 @@ func createKeyboard(levelButtons string) (keyboard tgbotapi.InlineKeyboardMarkup
 	}
 	return keyboard
 }
+func GetTasks(message *tgbotapi.Message, dbConfig Config) string {
+	numberArr := strings.Split(message.Text, " ")
+	if len(numberArr) == 0 {
+		numberArr[0] = "1"
+	}
+	var str string
+	for _, number := range numberArr {
+		tasks := dbConfig.DBSelectTask(fmt.Sprintf("WHERE Id='%s'", number))
+		for _, task := range tasks {
+			str += fmt.Sprintf("<b>%d</d>. %s\n", task.ID, task.Text)
+		}
+	}
+	if len(str) == 0 {
+		str = `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">http://dozor18.ru</a>.`
+	}
+	return str
+}
