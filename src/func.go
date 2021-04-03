@@ -339,7 +339,7 @@ func createKeyboard(levelButtons string) tgbotapi.InlineKeyboardMarkup {
 		}
 		if (pointer%3 == 0) || pointer == len(buttons) {
 			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, buttons)
-			//buttons = buttons[:0]
+			buttons = nil
 			pointer = 0
 		}
 	}
