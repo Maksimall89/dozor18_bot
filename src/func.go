@@ -8,6 +8,7 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -352,7 +353,8 @@ func GetTasks(message *tgbotapi.Message, dbConfig Config) string {
 	}
 	var str string
 	for _, number := range numberArr {
-		tasks := dbConfig.DBSelectTask(fmt.Sprintf("WHERE Id='%s'", number))
+		id, _ := strconv.Atoi(number)
+		tasks := dbConfig.DBSelectTask(fmt.Sprintf("WHERE Id='%s'", id))
 		for _, task := range tasks {
 			str += fmt.Sprintf("<b>%d</b>. %s\n", task.ID, task.Text)
 		}
