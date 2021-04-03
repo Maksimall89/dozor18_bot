@@ -222,9 +222,16 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 				continue
 			}
 			row = append(row, tgbotapi.NewInlineKeyboardButtonData(command.Describe, command.Command))
+			pointer++
+
+			if (pointer%3 == 0) || pointer == len(Commands) {
+				keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
+				row = nil
+				pointer = 0
+			}
 		}
 	}
-	keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
+	//keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
 
 	if replyToMessageID != 0 {
 		msg.ReplyToMessageID = replyToMessageID
