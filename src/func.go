@@ -227,7 +227,6 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 			if (pointer%3 == 0) || pointer == len(Commands) {
 				keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
 				row = nil
-				pointer = 0
 			}
 		}
 	}
