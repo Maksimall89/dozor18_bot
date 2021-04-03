@@ -213,31 +213,12 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 	if len(message) == 0 {
 		message = "&#9940;Нет данных."
 	}
-
-	var keyboard tgbotapi.InlineKeyboardMarkup
-	var buttons []tgbotapi.InlineKeyboardButton
-	for _, button := range Commands {
-		for _, levelMenu := range button.LevelMenu {
-			if levelMenu != levelButtons && levelMenu != "all" {
-				continue
-			}
-			btn := tgbotapi.NewInlineKeyboardButtonData(button.Describe, button.Command)
-			buttons = append(buttons, btn)
-			pointer++
-		}
-		if (pointer%3 == 0) || pointer == len(buttons) {
-			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, buttons)
-			buttons = buttons[:0]
-			pointer = 0
-		}
-	}
-
 	if replyToMessageID != 0 {
 		msg.ReplyToMessageID = replyToMessageID
 	}
 	msg.ChatID = chatId
 	msg.ParseMode = "HTML"
-	msg.ReplyMarkup = keyboard
+	msg.ReplyMarkup = createKeyboard(levelButtons)
 	for !isEnd {
 		if len(message) > 4090 { // ограничение на длину одного сообщения 4096
 			pointer = strings.LastIndex(message[0:4090], "\n")
@@ -341,4 +322,26 @@ func ConvertTimeSec(times int) string {
 		str += fmt.Sprintf("%d секунд", timeSec)
 	}
 	return strings.TrimSpace(str)
+}
+
+func createKeyboard(levelButtons string) tgbotapi.InlineKeyboardMarkup {
+	var keyboard tgbotapi.InlineKeyboardMarkup
+	var buttons []tgbotapi.InlineKeyboardButton
+	var pointer int
+	for _, button := range Commands {
+		for _, levelMenu := range button.LevelMenu {
+			if levelMenu != levelButtons && levelMenu != "all" {
+				continue
+			}
+			btn := tgbotapi.NewInlineKeyboardButtonData(button.Describe, button.Command)
+			buttons = append(buttons, btn)
+			pointer++
+		}
+		if (pointer%3 == 0) || pointer == len(buttons) {
+			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, buttons)
+			//buttons = buttons[:0]
+			pointer = 0
+		}
+	}
+	return keyboard
 }
