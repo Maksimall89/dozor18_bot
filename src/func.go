@@ -361,23 +361,27 @@ func GetTasks(message *tgbotapi.Message, dbConfig Config) string {
 	}
 
 	if counter == 0 {
-		str = createTaskList(dbConfig, "")
-	}else {
+		str = createTaskList(dbConfig, "", 1)
+	} else {
 		for _, idTask := range idMap {
-			str += createTaskList(dbConfig, fmt.Sprintf("WHERE ID='%d'", idTask))
+			str += createTaskList(dbConfig, fmt.Sprintf("WHERE ID='%d'", idTask), 1)
 		}
 	}
 
-	if len(str) == 0{
+	if len(str) == 0 {
 		return `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">http://dozor18.ru</a>.`
 
 	}
 	return str
 }
-func createTaskList (dbConfig Config, condition string)  (taskString string){
+func createTaskList(dbConfig Config, condition string, repeat int) (taskString string) {
 	tasks := dbConfig.DBSelectTask(condition)
-	for _, task := range tasks{
+	for _, task := range tasks {
 		taskString += fmt.Sprintf("<b>%d</b>. %s\n", task.ID, task.Text)
+	}
+	if taskString == "" && repeat == 1 {
+		repeat = 0
+		taskString = createTaskList(dbConfig, "", repeat)
 	}
 	return taskString
 }
