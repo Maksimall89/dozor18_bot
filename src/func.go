@@ -350,7 +350,7 @@ func GetTasks(message *tgbotapi.Message, dbConfig Config) string {
 	idMap := make(map[int]int)
 	var counter int
 	var err error
-	str := `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">http://dozor18.ru</a>.`
+	var str string
 
 	numberArr := strings.Split(message.CommandArguments(), " ")
 	for _, number := range numberArr {
@@ -359,12 +359,25 @@ func GetTasks(message *tgbotapi.Message, dbConfig Config) string {
 			counter++
 		}
 	}
-	tasks := dbConfig.DBSelectTask("")
-	for _, task := range tasks {
-		if (counter == 0) || (task.ID == idMap[task.ID]) {
-			str += fmt.Sprintf("<b>%d</b>. %s\n", task.ID, task.Text)
+
+	if counter == 0 {
+		str = createTaskList(dbConfig, "")
+	}else {
+		for _, idTask := range idMap {
+			str += createTaskList(dbConfig, fmt.Sprintf("WHERE ID='%d'", idTask))
 		}
 	}
 
+	if len(str) == 0{
+		return `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">http://dozor18.ru</a>.`
+
+	}
 	return str
+}
+func createTaskList (dbConfig Config, condition string)  (taskString string){
+	tasks := dbConfig.DBSelectTask(condition)
+	for _, task := range tasks{
+		taskString += fmt.Sprintf("<b>%d</b>. %s\n", task.ID, task.Text)
+	}
+	return taskString
 }
