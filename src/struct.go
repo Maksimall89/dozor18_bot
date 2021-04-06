@@ -100,4 +100,5 @@ var Commands = []CommandStruct{
 	{true, "удалить код", "delete", []string{"admin"}},
 	{true, "список команд", "listteams", []string{"admin"}},
 	{true, "создать в БД", "createdb", []string{"admin"}},
+	{true, "создать задание", "createtask", []string{"admin"}},
 }

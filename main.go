@@ -100,6 +100,9 @@ func main() {
 			case "createdb":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBCreateTables(), 0, bot, "admin")
 				continue
+			case "createtask":
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.CreateTask(update.Message, dbConfig), 0, bot, "admin")
+				continue
 			}
 		}
 

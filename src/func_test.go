@@ -69,7 +69,8 @@ func TestGetListHelps(t *testing.T) {
 		"/update - обновить коды: <b>CodeNew,Danger,Sector,TimeBonus,TaskID,CodeOld</b>;\n" +
 		"/delete - удалить код;\n" +
 		"/listteams - список команд;\n" +
-		"/createdb - создать в БД;\n"
+		"/createdb - создать в БД;\n" +
+		"/createtask - создать задание;\n"
 
 	var tests = []testPair{
 		{&tgbotapi.User{ID: 12, FirstName: "Max", LastName: "Test", LanguageCode: "code1"}, 13, userHelps},

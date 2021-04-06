@@ -385,3 +385,21 @@ func createTaskList(dbConfig Config, condition string, repeat int) (taskString s
 	}
 	return taskString
 }
+func CreateTask(message *tgbotapi.Message, dbConfig Config) string {
+	err := CheckMessage(message.CommandArguments())
+	if err != nil {
+		return fmt.Sprintf("%s", err)
+	}
+	task := Tasks{}
+	strArr := strings.Split(message.CommandArguments(), ",")
+	if len(strArr) != 2 {
+		return "&#10071;Нет всех аргументов: <code>/addtask id, text task</code>"
+	}
+	id, err := strconv.Atoi(strArr[0])
+	if err == nil {
+		return "&#10071;Id передан неверно"
+	}
+	task.ID = id
+	task.Text = strArr[1]
+	return dbConfig.DBInsertTask(&task)
+}
