@@ -391,7 +391,7 @@ func CreateTask(message *tgbotapi.Message, dbConfig Config) string {
 		return "&#10071;Нет всех аргументов: <code>/addtask id, text task</code>"
 	}
 	id, err := strconv.Atoi(strArr[0])
-	if err == nil {
+	if err != nil {
 		return "&#10071;Id передан неверно"
 	}
 	task := Tasks{}
