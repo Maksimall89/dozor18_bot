@@ -117,13 +117,13 @@ func ShowCodesMy(message *tgbotapi.Message, dbConfig Config) string {
 		isFound = false
 		for _, valueUser := range dataUser {
 			if valueUser.Code == valueRight.Code {
-				str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s), бонус <b>%s</b>, задание <b>/task %d</b>\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.Code, ConvertTimeSec(valueRight.TimeBonus), valueRight.TaskID)
+				str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s), бонус <b>%s</b>, задание <b>%d</b>\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.Code, ConvertTimeSec(valueRight.TimeBonus), valueRight.TaskID)
 				isFound = true
 				break
 			}
 		}
 		if !isFound {
-			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят, бонус <b>%s</b>, задание <b>/task %d</b>\n", number+1, valueRight.Danger, valueRight.Sector, ConvertTimeSec(valueRight.TimeBonus), valueRight.TaskID)
+			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят, бонус <b>%s</b>, задание <b>%d</b>\n", number+1, valueRight.Danger, valueRight.Sector, ConvertTimeSec(valueRight.TimeBonus), valueRight.TaskID)
 		}
 	}
 	return str
