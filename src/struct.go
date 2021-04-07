@@ -78,26 +78,29 @@ type CommandStruct struct {
 	IsAdmin   bool
 	Describe  string
 	Command   string
-	LevelMenu string
+	LevelMenu []string
 }
 
 var Commands = []CommandStruct{
-	{false, "информация по всем доступным командам", "help", "all"},
-	{false, "список кодов", "codes", "main"},
-	{false, "сгенерировать коды", "gen", ""},
-	{false, "текст приквела", "text", "main"},
-	{false, "создать команду", "create имя команды", ""},
-	{false, "вступить в команду", "join", ""},
-	{false, "список участников команды", "list", "team"},
-	{false, "список участников в командах", "listusers", "team"},
-	{false, "выйти из команды", "leave", "team"},
-	{false, "получить ссылку приглашение в команду", "invite", "team"},
-	{false, "список всех команд", "teams", "team"},
-	{true, "показать все коды", "show", "admin"},
-	{true, "удалить данные из таблицы <b>teams</b> или <b>codes</b>", "reset", ""},
-	{true, "добавить новые правильные коды в формате: <b>Code,Danger,Sector,TimeBonus,Tasks</b>", "add", ""},
-	{true, "обновить коды в бд, в формате: <b>CodeNew,Danger,Sector,TimeBonus,TaskID,CodeOld</b>", "update", ""},
-	{true, "удалить указанный код", "delete", ""},
-	{true, "список всех команд", "listteams", "admin"},
-	{true, "создать таблицы в БД", "createdb", ""},
+	{false, "все команды", "help", []string{"all"}},
+	{false, "список кодов", "codes", []string{"codes", "main"}},
+	{false, "сгенерировать коды", "gen", []string{""}},
+	{false, "текст задания", "text", []string{"main"}},
+	{false, "создать команду", "create имя команды", []string{""}},
+	{false, "вступить в команду", "join", []string{""}},
+	{false, "участники команды", "list", []string{"team"}},
+	{false, "участники в командах", "listusers", []string{"team"}},
+	{false, "выйти из команды", "leave", []string{"team"}},
+	{false, "приглашение в команду", "invite", []string{"team"}},
+	{false, "список команд", "teams", []string{"team"}},
+	{true, "показать коды", "show", []string{"admin"}},
+	{true, "удалить данные из <b>teams, codes, tasks</b>", "reset", []string{"admin"}},
+	{true, "добавить код: <b>Code,Danger,Sector,TimeBonus,Tasks</b>", "add", []string{"admin"}},
+	{true, "обновить коды: <b>CodeNew,Danger,Sector,TimeBonus,TaskID,CodeOld</b>", "update", []string{"admin"}},
+	{true, "удалить код", "delete", []string{"admin"}},
+	{true, "список команд", "listteams", []string{"admin"}},
+	{true, "создать в БД", "createdb", []string{"admin"}},
+	{true, "создать задание", "createtask", []string{"admin"}},
+	{true, "обновить задание", "updatetask", []string{"admin"}},
+	{true, "удалить задание", "deletetask", []string{"admin"}},
 }

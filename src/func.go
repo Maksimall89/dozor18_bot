@@ -8,6 +8,7 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -59,7 +60,7 @@ func CheckCode(message *tgbotapi.Message, bot *tgbotapi.BotAPI, dbConfig Config)
 			}
 		}
 	}
-	_ = SendMessageTelegram(message.Chat.ID, str, message.MessageID, bot, "main")
+	_ = SendMessageTelegram(message.Chat.ID, str, message.MessageID, bot, "codes")
 }
 func GetInvite(message *tgbotapi.Message, dbConfig Config) string {
 	str := "&#10071;Вы не состоите ни в одной команде."
@@ -85,7 +86,7 @@ func ShowCodesAll(dbConfig Config) string {
 	// ID, Time, NickName, Code, Danger, Sector
 	str := fmt.Sprintf("Всего кодов в движке: <b>%d</b>\n&#9989;Коды верные:\n", len(dataAllRight))
 	for number, value := range dataAllRight {
-		str += fmt.Sprintf("%d. <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s; <b>Бонус:</b>%s;\n", number+1, value.Code, value.Danger, value.Sector, ConvertTimeSec(value.TimeBonus))
+		str += fmt.Sprintf("%d. <b>Код:</b> %s; <b>КО:</b> %s; <b>Сектор:</b> %s; <b>Бонус:</b> %s;\n", number+1, value.Code, value.Danger, value.Sector, ConvertTimeSec(value.TimeBonus))
 	}
 
 	dataAllUsers := dbConfig.DBSelectCodesUser("")
@@ -116,13 +117,13 @@ func ShowCodesMy(message *tgbotapi.Message, dbConfig Config) string {
 		isFound = false
 		for _, valueUser := range dataUser {
 			if valueUser.Code == valueRight.Code {
-				str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s), бонус <b>%s</b>\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.Code, ConvertTimeSec(valueRight.TimeBonus))
+				str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор <b>%s</b>, &#9989;<b>СНЯТ</b> (%s), бонус <b>%s</b>, задание <b>%d</b>\n", number+1, valueRight.Danger, valueRight.Sector, valueRight.Code, ConvertTimeSec(valueRight.TimeBonus), valueRight.TaskID)
 				isFound = true
 				break
 			}
 		}
 		if !isFound {
-			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят, бонус <b>%s</b>\n", number+1, valueRight.Danger, valueRight.Sector, ConvertTimeSec(valueRight.TimeBonus))
+			str += fmt.Sprintf("%d. КО: <b>%s</b>, сектор: <b>%s</b>, &#10060;<b>НЕ</b> снят, бонус <b>%s</b>, задание <b>%d</b>\n", number+1, valueRight.Danger, valueRight.Sector, ConvertTimeSec(valueRight.TimeBonus), valueRight.TaskID)
 		}
 	}
 	return str
@@ -205,7 +206,7 @@ func GetListHelps(from *tgbotapi.User, adminID int) (commandList string) {
 	return commandList
 }
 func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot *tgbotapi.BotAPI, levelButtons string) error {
-	var pointerStr int
+	var pointer int
 	var msg tgbotapi.MessageConfig
 	var err error
 	isEnd := false
@@ -214,27 +215,17 @@ func SendMessageTelegram(chatId int64, message string, replyToMessageID int, bot
 		message = "&#9940;Нет данных."
 	}
 
-	keyboard := tgbotapi.InlineKeyboardMarkup{}
-	for _, button := range Commands {
-		if button.LevelMenu != levelButtons && button.LevelMenu != "all" {
-			continue
-		}
-		var row []tgbotapi.InlineKeyboardButton
-		btn := tgbotapi.NewInlineKeyboardButtonData(button.Describe, button.Command)
-		row = append(row, btn)
-		keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
-	}
 	if replyToMessageID != 0 {
 		msg.ReplyToMessageID = replyToMessageID
 	}
 	msg.ChatID = chatId
 	msg.ParseMode = "HTML"
-	msg.ReplyMarkup = keyboard
+	msg.ReplyMarkup = createKeyboard(levelButtons)
 	for !isEnd {
 		if len(message) > 4090 { // ограничение на длину одного сообщения 4096
-			pointerStr = strings.LastIndex(message[0:4090], "\n")
-			msg.Text = message[0:pointerStr]
-			message = message[pointerStr:]
+			pointer = strings.LastIndex(message[0:4090], "\n")
+			msg.Text = message[0:pointer]
+			message = message[pointer:]
 		} else {
 			msg.Text = message
 			isEnd = true
@@ -333,4 +324,78 @@ func ConvertTimeSec(times int) string {
 		str += fmt.Sprintf("%d секунд", timeSec)
 	}
 	return strings.TrimSpace(str)
+}
+func createKeyboard(levelButtons string) (keyboard tgbotapi.InlineKeyboardMarkup) {
+	var counter int
+	var row []tgbotapi.InlineKeyboardButton
+	for _, command := range Commands {
+		for _, levelMenu := range command.LevelMenu {
+			if levelMenu != levelButtons && levelMenu != "all" {
+				continue
+			}
+			row = append(row, tgbotapi.NewInlineKeyboardButtonData(command.Describe, command.Command))
+			counter++
+			if counter%3 == 0 {
+				keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
+				row = nil
+			}
+		}
+	}
+	if counter < 3 || counter == len(Commands) {
+		keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, row)
+	}
+	return keyboard
+}
+func GetTasks(message *tgbotapi.Message, dbConfig Config) string {
+	idMap := make(map[int]int)
+	var counter int
+	var err error
+	var str string
+
+	numberArr := strings.Split(message.CommandArguments(), " ")
+	for _, number := range numberArr {
+		idMap[counter], err = strconv.Atoi(number)
+		if err == nil {
+			counter++
+		}
+	}
+
+	if counter == 0 {
+		str = createTaskList(dbConfig, "", 1)
+	} else {
+		for _, idTask := range idMap {
+			str += createTaskList(dbConfig, fmt.Sprintf("WHERE ID='%d'", idTask), 1)
+		}
+	}
+
+	if len(str) == 0 {
+		return `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">http://dozor18.ru</a>.`
+
+	}
+	return str
+}
+func createTaskList(dbConfig Config, condition string, repeat int) (taskString string) {
+	tasks := dbConfig.DBSelectTask(condition)
+	for _, task := range tasks {
+		taskString += fmt.Sprintf("<b>%d</b>. %s\n", task.ID, task.Text)
+	}
+	if taskString == "" && repeat == 1 {
+		repeat = 0
+		taskString = createTaskList(dbConfig, "", repeat)
+	}
+	return taskString
+}
+func CreateTask(message *tgbotapi.Message, dbConfig Config) string {
+	strArr := strings.Split(message.CommandArguments(), ",")
+	if len(strArr) != 2 {
+		return "&#10071;Нет всех аргументов: <code>/addtask id, text task</code>"
+	}
+	id, err := strconv.Atoi(strArr[0])
+	if err != nil {
+		return "&#10071;Id передан неверно"
+	}
+	task := Tasks{}
+	task.ID = id
+	task.Text = strArr[1]
+	return dbConfig.DBInsertTask(&task)
 }

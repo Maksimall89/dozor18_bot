@@ -100,6 +100,15 @@ func main() {
 			case "createdb":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBCreateTables(), 0, bot, "admin")
 				continue
+			case "createtask":
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.CreateTask(update.Message, dbConfig), 0, bot, "admin")
+				continue
+			case "updatetask":
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBUpdateTask(update.Message.CommandArguments()), update.Message.MessageID, bot, "admin")
+				continue
+			case "deletetask":
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBDeleteTask(update.Message.CommandArguments()), update.Message.MessageID, bot, "admin")
+				continue
 			}
 		}
 
@@ -121,7 +130,7 @@ func main() {
 			}
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, str, update.Message.MessageID, bot, "main")
 		case "text", "task":
-			_ = src.SendMessageTelegram(update.Message.Chat.ID, `Текст приквела доступен на нашем сайте <a href="http://dozor18.ru">dozor18.ru</a>.`, update.Message.MessageID, bot, "main")
+			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetTasks(update.Message, dbConfig), update.Message.MessageID, bot, "main")
 		case "help", "start":
 			_ = src.SendMessageTelegram(update.Message.Chat.ID, src.GetListHelps(update.Message.From, configuration.OwnID), update.Message.MessageID, bot, "main")
 		case "create":
