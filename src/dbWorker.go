@@ -381,7 +381,7 @@ func (dbConfig *Config) DBInsertTask(tasks *Tasks) string {
 	return "&#9989;Задание <b>добавлено</b> в БД."
 }
 func (dbConfig *Config) DBDeleteTask(deleteStr string) string {
-	if len(deleteStr) < 2 {
+	if len(deleteStr) == 0 {
 		return "&#10071;Нет всех аргументов: <code>/deletetask taskID</code>"
 	}
 
