@@ -77,6 +77,7 @@ func (dbConfig *Config) DBTruncTables(name string) string {
 
 	maps := make(map[string]string)
 	maps["teams"] = `truncate table Teams CASCADE;`
+	maps["tasks"] = `truncate table Tasks CASCADE;`
 	maps["codes"] = `truncate table CodesRight CASCADE;`
 
 	_, err = db.Exec(maps[name])
@@ -381,7 +382,7 @@ func (dbConfig *Config) DBInsertTask(tasks *Tasks) string {
 }
 func (dbConfig *Config) DBDeleteTask(deleteStr string) string {
 	if len(deleteStr) < 2 {
-		return "&#10071;Нет всех аргументов: <code>/delete taskID</code>"
+		return "&#10071;Нет всех аргументов: <code>/deletetask taskID</code>"
 	}
 
 	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
@@ -399,8 +400,8 @@ func (dbConfig *Config) DBDeleteTask(deleteStr string) string {
 }
 func (dbConfig *Config) DBUpdateTask(updateData string) string {
 	strArr := strings.Split(updateData, ",")
-	if len(strArr) < 3 {
-		return "&#10071;Нет всех аргументов: <code>/update TaskID,Text,TaskIOldD</code>"
+	if len(strArr) < 2 {
+		return "&#10071;Нет всех аргументов: <code>/updatetask TaskID, Task</code>"
 	}
 
 	db, err := sql.Open(dbConfig.DriverNameDB, dbConfig.DBURL)
@@ -411,8 +412,8 @@ func (dbConfig *Config) DBUpdateTask(updateData string) string {
 
 	ArrTrimSpace(strArr)
 
-	_, err = db.Exec("UPDATE Tasks SET ID = $1, Text = $2 WHERE ID = $3",
-		strArr[0], strArr[1], strArr[2])
+	_, err = db.Exec("UPDATE Tasks SET Text = $1 WHERE ID = $2",
+		strArr[1], strArr[0])
 	if err != nil {
 		return fmt.Sprintf("&#10071;Unable to UPDATE Tasks: %v\n", err)
 	}

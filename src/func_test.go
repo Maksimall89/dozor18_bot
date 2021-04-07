@@ -64,13 +64,15 @@ func TestGetListHelps(t *testing.T) {
 		"/teams - список команд;\n"
 	adminHelps := userHelps +
 		"/show - показать коды;\n" +
-		"/reset - удалить данные из <b>teams</b> или <b>codes</b>;\n" +
+		"/reset - удалить данные из <b>teams, codes, tasks</b>;\n" +
 		"/add - добавить код: <b>Code,Danger,Sector,TimeBonus,Tasks</b>;\n" +
 		"/update - обновить коды: <b>CodeNew,Danger,Sector,TimeBonus,TaskID,CodeOld</b>;\n" +
 		"/delete - удалить код;\n" +
 		"/listteams - список команд;\n" +
 		"/createdb - создать в БД;\n" +
-		"/createtask - создать задание;\n"
+		"/createtask - создать задание;\n" +
+		"/updatetask - обновить задание;\n" +
+		"/deletetask - удалить задание;\n"
 
 	var tests = []testPair{
 		{&tgbotapi.User{ID: 12, FirstName: "Max", LastName: "Test", LanguageCode: "code1"}, 13, userHelps},

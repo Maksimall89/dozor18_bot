@@ -103,6 +103,12 @@ func main() {
 			case "createtask":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, src.CreateTask(update.Message, dbConfig), 0, bot, "admin")
 				continue
+			case "updatetask":
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBUpdateTask(update.Message.CommandArguments()), update.Message.MessageID, bot, "admin")
+				continue
+			case "deletetask":
+				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBDeleteTask(update.Message.CommandArguments()), update.Message.MessageID, bot, "admin")
+				continue
 			}
 		}
 
