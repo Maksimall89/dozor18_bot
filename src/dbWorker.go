@@ -344,7 +344,7 @@ func (dbConfig *Config) DBSelectTask(condition string) []Tasks {
 	}
 	defer db.Close()
 
-	query := fmt.Sprintf("SELECT id, Text FROM Tasks %s", condition)
+	query := fmt.Sprintf("SELECT id, Text FROM Tasks %s ORDER BY ID", condition)
 	rows, err := db.Query(query)
 	if err != nil {
 		log.Printf("&#9940;Unable to SELECT Tasks: %v\n", err)
