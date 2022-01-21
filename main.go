@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Maksimall89/dozor18_bot/src"
 	"github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"go.uber.org/zap"
 	"log"
 	"net/http"
 	"strconv"
@@ -15,6 +16,12 @@ func MainHandler(resp http.ResponseWriter, _ *http.Request) {
 }
 
 func main() {
+	logger, err := zap.NewProduction()
+	if err != nil {
+		_ = fmt.Errorf("can not configurate zap logger")
+	}
+	defer logger.Sync() // flushes buffer, if any
+	l := logger.Sugar()
 	// init configuration
 	configuration := src.Config{}
 	configuration.Init()
@@ -28,13 +35,13 @@ func main() {
 	// configuration bot
 	bot, err := tgbotapi.NewBotAPI(configuration.TelegramBotToken)
 	if err != nil {
-		log.Println(err)
+		l.Errorw("can not configuration bot", "error", err)
 	}
 
 	bot.Token = configuration.TelegramBotToken
 	bot.Debug = false
 
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+	l.Infow("Authorized successful", "account", bot.Self.UserName)
 	defer log.Println("Bot off!.")
 
 	u := tgbotapi.NewUpdate(0)
@@ -43,13 +50,16 @@ func main() {
 	// config webhook
 	updates := bot.ListenForWebhook(fmt.Sprintf("/read%s", configuration.ListenPath))
 	if err != nil {
-		log.Println(err)
-		log.Println("Failed to get updates")
+		l.Warnw("Failed to get updates", "error", err)
 	}
+
+	l.Infow("updates set")
 
 	// get info from DB
 	dbConfig := src.Config{}
 	dbConfig.Init()
+
+	l.Infow("config db read")
 
 	var str string
 	var command string
@@ -58,7 +68,9 @@ func main() {
 	for update := range updates {
 
 		if update.Message == nil {
+			l.Warnw("get nill message")
 			if update.CallbackQuery != nil {
+				l.Warnw("callbackQuery is not nil")
 				command = update.CallbackQuery.Data
 				update.Message = update.CallbackQuery.Message
 				update.Message.From = update.CallbackQuery.From
@@ -67,12 +79,15 @@ func main() {
 			}
 		} else {
 			if update.Message.From.IsBot {
+				l.Warnw("bot get msg from bot")
 				continue
 			}
 			command = strings.ToLower(update.Message.Command())
 		}
+		l.Infow("get update", "command", command)
 
 		if update.Message.From.ID == configuration.OwnID {
+			l.Info("msg from admin")
 			switch command {
 			case "reset", "restart":
 				_ = src.SendMessageTelegram(update.Message.Chat.ID, dbConfig.DBTruncTables(strings.TrimSpace(strings.ToLower(update.Message.CommandArguments()))), 0, bot, "admin")

@@ -5,5 +5,8 @@ go 1.15
 require (
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.0.0-rc1
 	github.com/lib/pq v1.9.0
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.7.0 // indirect
+	go.uber.org/zap v1.20.0
 )
